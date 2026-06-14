@@ -8,6 +8,33 @@
      One file. One whole app. No internet needed, no installs, nothing
      to sign up for. Open it in any browser and it runs.
 
+     NEW IN v0.22.2
+     · A fourth starter: 🏃 Exercise — a complete zero-equipment,
+       at-home session (~45–60 min). Prep (snack, water, clothing)
+       up front, warm-up, situps/pushups/squats/plank/jumping
+       jacks, stretching, a 15-min walk outside, and a cool-down.
+       45-second breaths between. No rep counts, no pressure —
+       you do what your body's got today.
+
+     NEW IN v0.22.1
+     · STARTER LIST: a few "try this" items pre-fill the List on a
+       fresh device — check the settings, use all three energy
+       modes, run the meditation, set up on both devices, export,
+       import. They behave like real List items (pull them into a
+       run, time them, finish them, watch them leave) so a new
+       tester learns the List by using it. 🔧 In
+       SETTINGS.starterListItems. Like the routines: seeded once,
+       deletions respected, gone after you clear them.
+
+     NEW IN v0.22
+     · THREE STARTER ROUTINES, pre-filled on first open (and after
+       a reset): 🌅 Morning, 🌙 Bedtime, 🧘 Meditation. Each with
+       gentle, short steps and 30-second beats between them (zero
+       for Meditation, so the sit flows unbroken). Keep them, edit
+       them, or delete any in two taps — they're examples and
+       useful defaults at once. 🔧 The starters live in
+       SETTINGS.starterRoutines.
+
      NEW IN v0.21
      · APP ICON: the gold ring on dusk is now baked into the file
        (icon + web-app manifest, embedded as data — still one
@@ -835,8 +862,8 @@ footer{
     <input type="text" id="rt-name" placeholder="Morning reset, Breakfast, Wind-down…"
            aria-label="Routine name">
 
-    <p class="set-label">Break between steps (minutes — 0 for none)</p>
-    <input type="number" id="rt-break" min="0" max="30" step="0.5" value="5"
+    <p class="set-label">Break between steps (minutes — 0 for none, 0.75 = 45 sec)</p>
+    <input type="number" id="rt-break" min="0" max="30" step="0.25" value="5"
            aria-label="Break length in minutes">
 
     <p class="set-label">Steps — any minutes you want, 1 to 120</p>
@@ -1066,7 +1093,7 @@ footer{
     <span class="t-ico">⚙️</span><span class="t-lab">You</span></button>
 </nav>
 
-<footer>Alongside v0.21 · an ORO project</footer>
+<footer>Alongside v0.22.2 · an ORO project</footer>
 
 <script>
 /* ════════════════════════════════════════════════
@@ -1155,6 +1182,60 @@ const SETTINGS = {
     formUrl: "https://forms.gle/CPm1HwMhcazdt2H26",
     email:   "sorens.it@gmail.com"
   },
+
+  /* 🔧 starter routines — pre-filled on first open and after reset.
+     Examples and useful defaults at once; fully editable. Morning
+     and Bedtime use 30-second beats between steps; Meditation
+     flows unbroken (0). */
+  starterRoutines: [
+    { name: "🌅 Morning", breakMin: 0.5, steps: [
+      { label: "Drink a glass of water", minutes: 2 },
+      { label: "Make the bed",           minutes: 3 },
+      { label: "Wash up, brush teeth",   minutes: 5 },
+      { label: "Quick tidy of one space",minutes: 10 },
+      { label: "Plan the day",           minutes: 5 }
+    ]},
+    { name: "🌙 Bedtime", breakMin: 0.5, steps: [
+      { label: "Tidy up for tomorrow",     minutes: 10 },
+      { label: "Lay out clothes, pack bag",minutes: 5 },
+      { label: "Brush teeth, wash up",     minutes: 5 },
+      { label: "Screens down, dim lights", minutes: 5 },
+      { label: "Read or breathe",          minutes: 10 }
+    ]},
+    { name: "🧘 Meditation", breakMin: 0, steps: [
+      { label: "Settle and breathe", minutes: 2 },
+      { label: "Body scan",          minutes: 5 },
+      { label: "Open awareness",     minutes: 5 },
+      { label: "Close gently",       minutes: 1 }
+    ]},
+    { name: "🏃 Exercise", breakMin: 0.75, steps: [
+      { label: "Prep — snack, water, clothing", minutes: 5 },
+      { label: "Warm up, loosen the joints",    minutes: 3 },
+      { label: "Situps",                        minutes: 2 },
+      { label: "Pushups",                       minutes: 2 },
+      { label: "Squats",                        minutes: 2 },
+      { label: "Plank (hold)",                  minutes: 1 },
+      { label: "Jumping jacks",                 minutes: 2 },
+      { label: "Stretching",                    minutes: 5 },
+      { label: "Walk outside, sunshine",        minutes: 15 },
+      { label: "Cool down, catch your breath",  minutes: 3 }
+    ]}
+  ],
+
+  /* 🔧 starter List items — a "try this" checklist pre-filled on a
+     fresh device. They behave like real List items so a tester
+     learns the List by using it: pull one in, time it, finish it,
+     watch it leave. Seeded once; deletions respected. */
+  starterListItems: [
+    "Check the settings in the You tab",
+    "Try all three energy modes",
+    "Do the Meditation routine",
+    "Set up Alongside on your phone",
+    "Set up Alongside on your computer",
+    "Export your setup from one device",
+    "Import your setup on the other",
+    "Send feedback from the You tab"
+  ],
 
   /* 🔧 auto-rest tiers for the Timer tab: [up-to-minutes, rest] */
   timerRestTiers: [
@@ -2160,6 +2241,42 @@ function openRoutinesTab(){
   renderRoutineList();
 }
 
+/* Seed the three starter routines — but only on a truly fresh
+   device (or after a reset). A "seeded" flag means we never
+   resurrect routines someone deliberately deleted later. */
+function seedStarterRoutines(){
+  if(store.get("routines-seeded", false)) return;
+  const existing = store.get("routines", []);
+  if(existing.length === 0){
+    const base = Date.now();
+    const seeded = SETTINGS.starterRoutines.map((rt, i) => ({
+      id: base + i,
+      name: rt.name,
+      breakMin: rt.breakMin,
+      steps: rt.steps.map(s => ({ label: s.label, minutes: s.minutes }))
+    }));
+    store.set("routines", seeded);
+  }
+  store.set("routines-seeded", true);
+}
+
+/* Seed the "try this" List items — same once-only rule, its own
+   flag, so a tester who clears them is never re-nagged. */
+function seedStarterListItems(){
+  if(store.get("list-seeded", false)) return;
+  const existing = store.get("list", []);
+  if(existing.length === 0){
+    const base = Date.now();
+    const seeded = SETTINGS.starterListItems.map((label, i) => ({
+      id: "starter-" + base + "-" + i,
+      label: label,
+      added: base
+    }));
+    store.set("list", seeded);
+  }
+  store.set("list-seeded", true);
+}
+
 function renderRoutineList(){
   const box = document.getElementById("rt-list");
   box.innerHTML = "";
@@ -2393,7 +2510,10 @@ function cancelRoutineEdit(){
 }
 
 function launchRoutine(id){
-  const rt = routines.find(r => r.id === id);
+  /* read from storage, not the in-memory array — a starter can be
+     launched (e.g. from a future shortcut) before the tab is opened */
+  const all = store.get("routines", []);
+  const rt = all.find(r => r.id === id);
   if(!rt || rt.steps.length === 0) return;
   switchTab("now");
   beginSession("routine", rt.steps, rt.breakMin);
@@ -3008,6 +3128,12 @@ function saveSettings(){
 
 function resetSettings(){
   store.remove("profile");
+  /* bring the starter routines + List back on reset — clear the flags
+     and current sets so boot reseeds the gentle examples */
+  store.remove("routines");
+  store.remove("routines-seeded");
+  store.remove("list");
+  store.remove("list-seeded");
   /* simplest honest reset: reload the file with its defaults */
   location.reload();
 }
@@ -3114,6 +3240,9 @@ function importSetup(){
   if(Array.isArray(bundle.routines)){ store.set("routines", bundle.routines); }
   if(Array.isArray(bundle.list)){ store.set("list", bundle.list); }
   if(typeof bundle.nudgesOn === "boolean"){ store.set("nudges-on", bundle.nudgesOn); }
+  /* an imported setup is intentional — don't seed starters over it */
+  store.set("routines-seeded", true);
+  store.set("list-seeded", true);
 
   document.getElementById("import-note").textContent =
     "Brought it in. Reloading with your setup…";
@@ -3239,6 +3368,8 @@ function finishWelcome(){
 function boot(){
   store.init();
   loadProfile();                       // the You tab's saves win
+  seedStarterRoutines();               // three gentle examples on a fresh device
+  seedStarterListItems();              // a "try this" checklist on a fresh device
   sound.enabled = store.get("nudges-on", true);
   voice.init();
   paintNudgeToggles();
