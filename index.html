@@ -1,0 +1,3273 @@
+<!DOCTYPE html>
+<!-- ═══════════════════════════════════════════════════════════════════
+     ALONGSIDE v0.16  ·  an ORO project
+     ───────────────────────────────────────────────────────────────────
+     Built by Soren Petersen (founder) with Claude (build partner).
+
+     WHAT THIS IS
+     One file. One whole app. No internet needed, no installs, nothing
+     to sign up for. Open it in any browser and it runs.
+
+     NEW IN v0.20 — READY TO SHARE
+     · WELCOME now says what Alongside is, so someone arriving
+       cold (a friend, a therapist) understands it in one line
+       before the name prompt.
+     · FEEDBACK: a 💬 Send feedback button in ⚙️ You opens the
+       beta feedback form, plus a direct email link. 🔧 Both the
+       form URL and the email live in SETTINGS.feedback.
+
+     NEW IN v0.19.2
+     · Setting for where the List offers to pull: Middle & Charge,
+       Charge only, or Never. (⚙️ You — defaults to both.)
+
+     NEW IN v0.19.1
+     · Tap any List item to rename it in place — same gesture as
+       routine steps. "Clean bathroom" → "Master bathroom" in two
+       taps. (Enter or tap away saves; Escape cancels.)
+
+     NEW IN v0.19 — THE LIST
+     · A 📋 LIST tab: a holding pen for "need to do sooner than
+       later" errands — yours or texted from someone. Capture
+       lands here unsorted and pressure-free; you pull from it
+       into a run only when you've got the energy.
+     · ONE combined capture box: type a single thing and hit
+       enter, OR paste a whole block (one per line, or commas)
+       and it splits into separate items at once.
+     · PULLED ITEMS LEAVE. Sending an item into a run moves it
+       out of the List — it's a holding pen, not a home. Even a
+       recurring "dishes" is just passing through.
+     · AGE + DIAL: each item shows how long it's waited. Past
+       your limit (⚙️ You, default 7 days) it flags clay — never
+       auto-deleted, just "still need this?".
+     · IN-YOUR-FACE NUDGES: a count badge on the List tab (clay
+       when something's overdue) AND a line on the Now screen.
+       Tap "I've got some charge" and the List greets you first —
+       pull waiting items straight into the run.
+       HONEST NOTE: these nudges show while the app is open.
+       Real buzz-when-closed notifications need hosting — that's
+       Graduation Day, a future session. The hook is left clean.
+
+     NEW IN v0.18
+     · FIRST-RUN WELCOME: the very first time Alongside opens
+       on a device it asks one thing — "What should I call you?"
+       — and waits. No more "Soren" baked in as the default;
+       the file ships blank and ready for anyone. (You can
+       change the name any time in ⚙️ You, same as before.)
+     · EXPORT / IMPORT: in ⚙️ You, carry your whole setup —
+       name, affirmations, quick tasks, voice, nudge choices,
+       AND every routine — between devices. Export copies a
+       code (and offers a .json file); Import pastes it back on
+       the other device. Set it up once on the computer, bring
+       it to the phone. Not live sync — a clean one-time carry.
+
+     NEW IN v0.17 (Samsung field-test fixes + upgrades)
+     · KEEP-AWAKE: while any timer runs, Alongside asks the phone
+       to keep the screen on (the Wake Lock API), so chimes,
+       voices, and washes actually reach you. Toggle in ⚙️ You.
+       HONEST NOTE: once a phone screen truly locks, mobile
+       browsers silence all pages by design — the full fix is
+       scheduled notifications, which needs the app hosted
+       (that's Graduation Day, a future session).
+     · CATCH-UP: coming back after the phone slept no longer
+       dog-piles every missed chime at once — passed nudges are
+       absorbed silently, and if time ran out while you were
+       away, "Time" announces once.
+     · BREAK'S OVER joined the mixing board: chime, voice, or
+       off — and it gets a sage wash too.
+     · ROUTINES: drag the ≡ handle to reorder steps; tap a
+       step's name to rename it in place.
+     · TIMER AUTO-REST: the Timer tab now follows work with a
+       rest on the same ring — 2:00 after a 5-min timer, 2:30
+       after 10–15, 5:00 above that (🔧 tiers). Skippable,
+       adjustable live, and toggleable in ⚙️ You.
+
+     NEW IN v0.16
+     · SPOKEN NUDGES: the browser has a voice engine built in
+       (speechSynthesis — same no-files trick as the chimes).
+       Pick any voice installed on your device — genders, accents,
+       languages — in the ⚙️ You tab, with a Test button.
+     · THE NUDGE MIXING BOARD: for each moment — Halfway, One
+       minute, Thirty seconds, the Final-ten countdown, Time's up —
+       choose Chime, Voice, or Off. Mix freely: voice for the big
+       ones, ticks for the countdown, silence where you want it.
+     · SCREEN WASH toggle: the color flashes can be turned off
+       in settings too.
+     · ROUTINES: a new tab. Build named runs — "Morning reset",
+       "Breakfast" — with ANY minutes per step (your 3-minute
+       shake is now a first-class citizen, 1–120 min). Each
+       routine has its own break length, including ZERO for
+       tight back-to-back routines. Edit or delete any time,
+       launch with one tap. Skip lives in every run already.
+     · PULLED AWAY: a pause for real life. One tap freezes the
+       task; "I'm back →" picks it up exactly where it stopped,
+       no guilt, no dead timer staring at you.
+
+     STILL TRUE
+     · Energy routes the day: LOW → affirmations → one tiny step;
+       MIDDLE → Steady → 2–3 tasks, 5-min breaks; CHARGE →
+       Ignite → 5+, tight 2½-min breaks. Care prompts every break.
+     · Live ±30s/±1m adjustment on tasks and breaks (10s floor).
+     · Sounds are MADE, not downloaded. Wins log start → end.
+     · Choosing rest is a win. Parking is allowed. Always.
+
+     HOW TO TWEAK IT
+     · Name, affirmations, quick tasks, voice, nudge channels,
+       screen wash → the ⚙️ You tab, in-app.
+     · Routines → the 📋 Routines tab, in-app.
+     · Everything deeper (colors, melodies, break defaults,
+       batch rules, Steady & Ignite lines) → search  🔧  in this
+       file with any text editor. Save, refresh. That's the loop.
+
+     THE MAP OF THIS FILE
+     1. THE SKIN  (CSS)  — colors, type, tabs, rings, rows
+     2. THE BONES (HTML) — Now · Routines · Timer · Wins · You
+     3. THE MUSCLE (JS)  — settings & profile, memory, chimes,
+                           the voice, the timer engine, runs &
+                           breaks & routines, wins, mic input
+
+     Why v0.13 came first? You know why. 👑
+     ═══════════════════════════════════════════════════════════════ -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alongside</title>
+
+<style>
+/* ════════════════════════════════════════════════
+   1. THE SKIN — how Alongside looks and feels
+   ════════════════════════════════════════════════ */
+
+/* ── 1a. Design tokens ──────────────────────────
+   🔧 The whole color story lives here. The palette
+   is a Sonoran desert dusk — and the accent is
+   gold, because ORO means gold. The Wink is
+   built in. */
+:root{
+  --dusk:   #211d2b;
+  --adobe:  #2c2737;
+  --edge:   #3a3349;
+  --bone:   #efe8da;
+  --faded:  #9a92a8;
+  --oro:    #d9a441;
+  --oro-deep:#b9882f;
+  --sage:   #8fb996;
+  --clay:   #c96f5e;   /* soft desert red — the 30-second wash */
+
+  --radius: 18px;      /* 🔧 softness of corners */
+}
+
+/* ── THE SCREEN WASH ─────────────────────────────
+   A full-screen glow that rises and fades on the
+   big nudges. One slow pulse, never a strobe —
+   gentle on TBI brains and photosensitive eyes,
+   but bright enough to catch the corner of one. */
+#screenwash{
+  position: fixed;
+  inset: 0;
+  pointer-events: none;     /* taps pass straight through it */
+  opacity: 0;
+  z-index: 60;
+  transition: opacity .5s ease;
+}
+@media (prefers-reduced-motion: reduce){
+  #screenwash{ display:none; }
+}
+
+/* ── THE FIRST-RUN GATE ──────────────────────────
+   A full-screen cover that waits for a name before
+   the app proper appears. */
+#welcome-gate{
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: var(--dusk);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1.5rem, 6vw, 2.5rem);
+  animation: arrive .4s ease both;
+}
+.gate-card{
+  width: 100%;
+  max-width: 30rem;
+  text-align: center;
+}
+.gate-card .input-row{ margin-top: 1.4rem; text-align: left; }
+
+/* ── 1b. Foundations ──────────────────────────── */
+*{ box-sizing:border-box; margin:0; padding:0; }
+html{ -webkit-text-size-adjust:100%; }
+
+body{
+  background: var(--dusk);
+  color: var(--bone);
+  font-family: ui-rounded, "SF Pro Rounded", system-ui, -apple-system,
+               "Segoe UI", Roboto, sans-serif;
+  font-size: 19px;            /* 🔧 base text size — big on purpose */
+  line-height: 1.6;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 96px;       /* room for the tab bar */
+}
+
+main{
+  width: 100%;
+  max-width: 34rem;
+  padding: clamp(1.5rem, 6vw, 2.75rem) clamp(1.25rem, 5vw, 2.5rem);
+  flex: 1;
+}
+
+/* ── 1c. Shared pieces ────────────────────────── */
+.eyebrow{
+  font-size:.72rem; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--faded); margin-bottom:.9rem;
+}
+h1{
+  font-size: clamp(1.7rem, 6vw, 2.2rem);
+  font-weight:700; line-height:1.25; margin-bottom:.6rem;
+}
+.sub{ color:var(--faded); margin-bottom:1.6rem; }
+
+button{
+  font:inherit; width:100%; min-height:60px;
+  padding:.9rem 1.2rem; margin-bottom:.8rem;
+  border-radius:var(--radius);
+  border:1px solid var(--edge);
+  background:var(--adobe); color:var(--bone);
+  font-weight:600; font-size:1.05rem; cursor:pointer;
+  text-align:left;
+  transition: transform .08s ease, background .15s ease;
+}
+button:active{ transform:scale(.985); }
+button:focus-visible{ outline:3px solid var(--oro); outline-offset:2px; }
+
+button.primary{
+  background:var(--oro); border-color:var(--oro);
+  color:#221a08; text-align:center;
+}
+button.primary:active{ background:var(--oro-deep); }
+
+button.quiet{
+  background:transparent; color:var(--faded);
+  border-color:transparent; text-align:center; min-height:48px;
+}
+
+.row{ display:flex; gap:.7rem; }
+.row button{ flex:1; text-align:center; }
+
+/* the fine time-adjust row: −1m · −30s · +30s · +1m */
+.row.adjust button{
+  min-height:52px; font-size:.95rem;
+  font-variant-numeric: tabular-nums;
+}
+
+input[type="text"], input[type="number"], select{
+  font:inherit; width:100%;
+  padding:1rem 1.1rem;
+  border-radius:var(--radius);
+  border:1px solid var(--edge);
+  background:var(--adobe); color:var(--bone);
+  font-size:1.1rem; margin-bottom:.8rem;
+}
+input:focus-visible, select:focus-visible{
+  outline:3px solid var(--oro); outline-offset:2px;
+}
+input::placeholder{ color:var(--faded); }
+
+/* slim number inputs inside rows */
+.build-row input[type="number"]{
+  width:5.2rem; margin:0;
+  padding:.35rem .5rem; font-size:.95rem;
+  border-radius:10px; text-align:center;
+}
+
+.chips{ display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:1.4rem; }
+.chips button{
+  width:auto; min-height:44px;
+  padding:.45rem .95rem; margin:0;
+  border-radius:999px; font-size:.92rem; font-weight:500;
+}
+.chips button.selected{ border-color:var(--oro); color:var(--oro); }
+
+.chip-label{
+  font-size:.78rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--faded); margin-bottom:.5rem;
+}
+
+/* ── 1d. Tabs & views ─────────────────────────── */
+.view{ display:none; }
+.view.active{ display:block; animation: arrive .35s ease both; }
+
+.tabbar{
+  position:fixed; bottom:0; left:0; right:0;
+  display:flex; justify-content:center; gap:.15rem;
+  padding:.5rem .3rem calc(.5rem + env(safe-area-inset-bottom));
+  background: color-mix(in srgb, var(--dusk) 88%, black);
+  border-top:1px solid var(--edge);
+}
+.tabbar button{
+  flex:1 1 0; min-width:0; max-width:5.5rem;
+  min-height:54px; margin:0; padding:.4rem .15rem;
+  background:transparent; border:none; color:var(--faded);
+  border-radius:14px;
+  display:flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:2px;
+}
+.tabbar .t-ico{ font-size:1.1rem; line-height:1; }
+.tabbar .t-lab{ font-size:.64rem; letter-spacing:.02em; font-weight:600; }
+.tabbar button.active{ color:var(--oro); background:var(--adobe); }
+
+/* the count badge that rides the List tab */
+.tab-badge{
+  position:absolute;
+  top:4px;
+  right:50%;
+  transform:translateX(1.3rem);
+  min-width:1.15rem; height:1.15rem;
+  padding:0 .28rem;
+  border-radius:999px;
+  background:var(--oro); color:#221a08;
+  font-size:.66rem; font-weight:800; line-height:1.15rem;
+  text-align:center;
+}
+.tab-badge.overdue{ background:var(--clay); color:#fff; }
+.tabbar button{ position:relative; }
+
+/* the in-your-face banner on the Now screen */
+.list-banner{
+  display:block; width:100%;
+  text-align:left;
+  background:var(--adobe);
+  border:1px solid var(--edge);
+  border-left:3px solid var(--oro);
+  border-radius:14px;
+  padding:.8rem 1rem; margin-bottom:1.2rem;
+  color:var(--bone); font-size:.95rem; font-weight:600;
+  cursor:pointer;
+}
+.list-banner.overdue{ border-left-color:var(--clay); }
+.list-banner .b-sub{ color:var(--faded); font-weight:500; font-size:.85rem; display:block; margin-top:2px; }
+
+/* ── 1e. Screens inside the Now view ──────────── */
+.screen{ display:none; animation: arrive .35s ease both; }
+.screen.active{ display:block; }
+
+@keyframes arrive{
+  from{ opacity:0; transform:translateY(8px); }
+  to  { opacity:1; transform:none; }
+}
+
+/* ── 1f. Opening moments: Ground · Steady · Ignite */
+.breath-dot{
+  width:14px; height:14px; border-radius:50%;
+  background:var(--oro); margin:0 auto 2rem;
+  animation: breathe 4s ease-in-out infinite;
+}
+.breath-dot.sage{ background:var(--sage); }
+.breath-dot.quick{ animation-duration:2.2s; }
+
+@keyframes breathe{
+  0%,100%{ transform:scale(1);   opacity:.55; }
+  50%    { transform:scale(1.8); opacity:1;   }
+}
+
+.affirmations{ text-align:center; margin-bottom:2.2rem; }
+.affirmations p{
+  font-size:1.45rem; font-weight:650; padding:.45rem 0;
+  opacity:0; animation: settle 1.1s ease forwards;
+}
+.affirmations p:nth-child(1){ animation-delay:.4s; }
+.affirmations p:nth-child(2){ animation-delay:1.5s; }
+.affirmations p:nth-child(3){ animation-delay:2.6s; }
+.affirmations p:nth-child(4){ animation-delay:3.7s; }
+
+.ground-actions{ opacity:0; animation: settle 1s ease 4.9s forwards; }
+.ground-actions.soon{ animation-delay:3.6s; }
+
+@keyframes settle{ to{ opacity:1; } }
+
+/* ── 1g. The focus screen ─────────────────────── */
+.the-task{
+  font-size: clamp(2rem, 8vw, 2.9rem);
+  font-weight:700; line-height:1.2;
+  margin:1.2rem 0 .4rem; overflow-wrap:break-word;
+}
+.encourage{ color:var(--faded); margin-bottom:1.4rem; font-style:italic; }
+
+/* ── 1h. THE VISUAL TIMER ─────────────────────── */
+.timer-face{
+  position:relative;
+  width:min(290px, 72vw);
+  margin:0 auto 1.2rem;
+}
+.timer-face svg{ width:100%; height:auto; display:block; }
+.ring-track{ fill:none; stroke:var(--edge); stroke-width:10; }
+.ring-meter{
+  fill:none; stroke:var(--oro); stroke-width:10; stroke-linecap:round;
+  /* 527.79 = the distance around the ring (2 × π × 84) */
+  stroke-dasharray:527.79; stroke-dashoffset:0;
+  transform:rotate(-90deg); transform-origin:50% 50%;
+  transition: stroke-dashoffset .25s linear;
+}
+.timer-clock{
+  position:absolute; inset:0;
+  display:grid; place-items:center;
+  font-size:2.7rem; font-weight:700;
+  font-variant-numeric: tabular-nums;
+  transition: color .3s ease;
+}
+.timer-face.nudged .timer-clock{ color:var(--oro); }
+.timer-face.closing .ring-meter{ animation: lastlight 2s ease-in-out infinite; }
+@keyframes lastlight{ 0%,100%{ opacity:1; } 50%{ opacity:.55; } }
+
+.timer-face.resting .ring-meter{ stroke:var(--sage); }
+
+.time-range{
+  text-align:center; color:var(--faded);
+  font-size:.95rem; margin-bottom:.4rem;
+}
+.time-range strong{ color:var(--bone); font-weight:650; }
+
+.nudge-note{
+  text-align:center; color:var(--oro);
+  font-size:.92rem; font-weight:600; letter-spacing:.04em;
+  min-height:1.4em; margin-bottom:1.1rem;
+}
+
+.care{
+  text-align:center; color:var(--sage);
+  font-weight:650; font-size:1.05rem; margin-bottom:.6rem;
+}
+.flash{
+  text-align:center; color:var(--sage);
+  font-size:.92rem; min-height:1.4em; margin-bottom:1rem;
+}
+
+/* ── 1i. Builder, routine & settings rows ─────── */
+.build-row{
+  display:flex; align-items:center; gap:.6rem;
+  background:var(--adobe); border-radius:12px;
+  border-left:3px solid var(--oro);
+  padding:.5rem .6rem .5rem .9rem; margin-bottom:.5rem;
+}
+.build-row .grow{ flex:1; font-size:1rem; overflow-wrap:anywhere; }
+.build-row button{
+  width:auto; min-height:40px; margin:0;
+  padding:.3rem .7rem; font-size:.85rem;
+  border-radius:999px;
+}
+/* routine-step drag handle: grab ≡ and slide */
+.drag-handle{
+  cursor:grab;
+  touch-action:none;          /* the handle owns the touch, not the scroll */
+  user-select:none;
+  -webkit-user-select:none;
+  font-size:1.1rem;
+  padding:.3rem .35rem !important;
+  border:none !important;
+  background:transparent !important;
+  color:var(--faded);
+}
+.build-row.dragging{
+  opacity:.55;
+  border-left-color:var(--sage);
+}
+.build-row .grow input{
+  margin:0; padding:.35rem .6rem;
+  font-size:1rem; border-radius:10px;
+}
+.build-note{
+  color:var(--faded); font-size:.9rem;
+  min-height:1.4em; margin-bottom:1rem;
+}
+
+.set-label{
+  font-size:.78rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--faded); margin:1.2rem 0 .5rem;
+}
+
+/* the nudge mixing board */
+.channel-row{
+  display:flex; align-items:center; gap:.5rem;
+  margin-bottom:.55rem; flex-wrap:wrap;
+}
+.channel-row .grow{ flex:1 1 8rem; font-size:.95rem; }
+.channel-row .chips{ margin:0; }
+.channel-row .chips button{ min-height:38px; padding:.3rem .75rem; font-size:.85rem; }
+
+/* ── 1j. Wins ─────────────────────────────────── */
+ul.wins{ list-style:none; margin:1rem 0 1.6rem; }
+ul.wins li{
+  padding:.55rem .9rem; margin-bottom:.45rem;
+  background:var(--adobe); border-radius:12px;
+  border-left:3px solid var(--sage);
+  font-size:.98rem;
+}
+ul.wins li .when{ color:var(--faded); font-size:.85rem; display:block; }
+
+.past-day{
+  display:flex; justify-content:space-between;
+  padding:.7rem .9rem; margin-bottom:.45rem;
+  background:var(--adobe); border-radius:12px;
+  font-size:.95rem; color:var(--faded);
+}
+.past-day b{ color:var(--bone); font-weight:600; }
+
+/* ── 1k. Voice buttons ────────────────────────── */
+.input-row{ display:flex; gap:.6rem; }
+.input-row input{ flex:1; }
+.mic-btn{
+  width:60px; min-width:60px; min-height:auto;
+  margin:0; text-align:center; font-size:1.4rem;
+  align-self:stretch;
+}
+.mic-btn.listening{
+  border-color:var(--oro);
+  animation: breathe 1.4s ease-in-out infinite;
+}
+
+/* ── 1l. Footer ───────────────────────────────── */
+footer{
+  padding:1rem; font-size:.72rem;
+  letter-spacing:.16em; text-transform:uppercase;
+  color:var(--faded);
+}
+
+/* ── 1m. Calm mode ────────────────────────────── */
+@media (prefers-reduced-motion: reduce){
+  *{ animation:none !important; transition:none !important; }
+  .affirmations p, .ground-actions{ opacity:1; }
+}
+</style>
+</head>
+
+<body>
+<div id="screenwash" aria-hidden="true"></div>
+
+<!-- ╔══════════════ FIRST-RUN WELCOME ══════════╗
+     Shown only until a name exists on this device.
+     The file ships with no default name, so this is
+     the true front door the first time through. -->
+<div id="welcome-gate" style="display:none;">
+  <div class="gate-card">
+    <div class="breath-dot" aria-hidden="true"></div>
+    <p class="eyebrow">Alongside</p>
+    <h1>One thing at a time.<br>Starting with your name.</h1>
+    <p class="sub" style="margin-bottom:.4rem;">
+      Alongside helps you do one thing at a time, on whatever energy you've
+      got today — gentle when you're low, a steady run when you're charged.</p>
+    <p class="sub">This stays on your device. Nothing leaves, nothing signs up.</p>
+
+    <div class="input-row">
+      <input type="text" id="gate-name" placeholder="What should I call you?"
+             aria-label="Your name" autocomplete="off">
+      <button id="gate-mic" class="mic-btn" onclick="listen('gate-name','gate-mic')"
+              aria-label="Speak your name">🎙️</button>
+    </div>
+
+    <button class="primary" onclick="finishWelcome()">That's me →</button>
+    <p class="build-note" id="gate-note"></p>
+  </div>
+</div>
+
+<main>
+
+<!-- ════════════════════════════════════════════════
+     2. THE BONES — five tab views
+     ════════════════════════════════════════════════ -->
+
+<!-- ╔══════════════ VIEW 1 · NOW ══════════════╗ -->
+<div class="view active" id="view-now">
+
+  <!-- SCREEN 1 · Welcome -->
+  <section class="screen active" id="screen-welcome">
+    <p class="eyebrow">Alongside</p>
+    <h1 id="greeting">Hey.</h1>
+
+    <!-- in-your-face: List items waiting (shows only when there are some) -->
+    <div class="list-banner" id="welcome-list-banner" style="display:none;"
+         onclick="switchTab('list')"></div>
+
+    <p class="sub">How's your energy right now? No wrong answers.</p>
+
+    <!-- 🔧 Reword these however feels true to you -->
+    <button onclick="chooseEnergy('low')">🪫 &nbsp;I'm running low</button>
+    <button onclick="chooseEnergy('mid')">🌗 &nbsp;Somewhere in the middle</button>
+    <button onclick="chooseEnergy('high')">⚡ &nbsp;I've got some charge</button>
+  </section>
+
+  <!-- SCREEN 2 · GROUND (low) -->
+  <section class="screen" id="screen-ground">
+    <div class="breath-dot" aria-hidden="true"></div>
+    <div class="affirmations" id="affirmation-lines"></div>
+    <div class="ground-actions">
+      <button class="primary" onclick="goTo('screen-task')">Give me one tiny step</button>
+      <button onclick="restIsTheTask()">Today, rest is the task</button>
+      <button class="quiet" onclick="goTo('screen-welcome')">← Back</button>
+    </div>
+  </section>
+
+  <!-- SCREEN 3 · STEADY (middle) -->
+  <section class="screen" id="screen-steady">
+    <div class="breath-dot sage" aria-hidden="true"></div>
+    <div class="affirmations" id="steady-lines"></div>
+    <div class="ground-actions soon">
+      <button class="primary" onclick="goBuilder('mid')">Build the run</button>
+      <button class="quiet" onclick="goTo('screen-welcome')">← Back</button>
+    </div>
+  </section>
+
+  <!-- SCREEN 3.5 · PULL FROM LIST (appears before a builder
+       when the List has items waiting) -->
+  <section class="screen" id="screen-pull">
+    <p class="eyebrow" id="pull-eyebrow">From your List</p>
+    <h1>Tackle these first?</h1>
+    <p class="sub" id="pull-sub">Tap any to pull them into this run. The rest stay on your List.</p>
+
+    <div id="pull-list"></div>
+
+    <button class="primary" onclick="confirmPull()">Pull selected in →</button>
+    <button class="quiet" onclick="skipPull()">Skip — build from scratch</button>
+  </section>
+
+  <!-- SCREEN 4 · IGNITE (charge) -->
+  <section class="screen" id="screen-ignite">
+    <div class="breath-dot quick" aria-hidden="true"></div>
+    <div class="affirmations" id="ignite-lines"></div>
+    <div class="ground-actions soon">
+      <button class="primary" onclick="goBuilder('charge')">Line them up →</button>
+      <button class="quiet" onclick="goTo('screen-welcome')">← Back</button>
+    </div>
+  </section>
+
+  <!-- SCREEN 5 · Single task (low path) -->
+  <section class="screen" id="screen-task">
+    <p class="eyebrow">One thing</p>
+    <h1>Just this. Nothing else.</h1>
+    <p class="sub">Type it, say it, or tap one below. Even “drink water” counts.</p>
+
+    <div class="input-row">
+      <input type="text" id="task-input" placeholder="One small thing…"
+             aria-label="Your one task">
+      <button id="mic" class="mic-btn" onclick="listen('task-input','mic')"
+              aria-label="Speak your task">🎙️</button>
+    </div>
+
+    <div class="chips" id="chips"></div>
+
+    <p class="chip-label">Put a window around it?</p>
+    <div class="chips" id="durations"></div>
+
+    <button class="primary" onclick="lockItIn()">Lock it in</button>
+    <button class="quiet" onclick="goTo('screen-welcome')">← Back</button>
+  </section>
+
+  <!-- SCREEN 6 · RUN BUILDER -->
+  <section class="screen" id="screen-build">
+    <p class="eyebrow" id="build-eyebrow">Build your run</p>
+    <h1 id="build-title">Pick two or three.</h1>
+    <p class="sub" id="build-sub">Small batch, generous breaks.</p>
+
+    <div class="input-row">
+      <input type="text" id="build-input" placeholder="Add a task…"
+             aria-label="Add a task to the run">
+      <button id="build-mic" class="mic-btn" onclick="listen('build-input','build-mic')"
+              aria-label="Speak a task">🎙️</button>
+    </div>
+
+    <div class="chips" id="build-chips"></div>
+
+    <p class="chip-label">Window for the next task</p>
+    <div class="chips" id="build-durations"></div>
+
+    <button onclick="addDraftTask()">+ Add to the run</button>
+
+    <div id="build-list"></div>
+    <p class="build-note" id="build-note"></p>
+
+    <button class="primary" id="build-start" onclick="startRun()">Start the run</button>
+    <button class="quiet" onclick="goTo('screen-welcome')">← Back</button>
+  </section>
+
+  <!-- SCREEN 7 · Focus -->
+  <section class="screen" id="screen-focus">
+    <p class="eyebrow" id="focus-eyebrow">Right now</p>
+    <p class="the-task" id="task-display"></p>
+    <p class="encourage" id="encourage-line"></p>
+
+    <div id="focus-timer" style="display:none;">
+      <div class="timer-face" id="focus-face">
+        <svg viewBox="0 0 200 200" aria-hidden="true">
+          <circle class="ring-track" cx="100" cy="100" r="84"/>
+          <circle class="ring-meter" id="focus-meter" cx="100" cy="100" r="84"/>
+        </svg>
+        <div class="timer-clock" id="focus-clock">0:00</div>
+      </div>
+    </div>
+
+    <p class="time-range" id="focus-range"></p>
+    <p class="nudge-note" id="focus-note" aria-live="polite"></p>
+    <p class="time-range" id="focus-upnext" style="display:none;"></p>
+
+    <!-- live time adjustment: never below 10 seconds left -->
+    <div class="row adjust" id="focus-adjust" style="display:none;">
+      <button onclick="focusTimer.adjust(-60000)">−1m</button>
+      <button onclick="focusTimer.adjust(-30000)">−30s</button>
+      <button onclick="focusTimer.adjust(30000)">+30s</button>
+      <button onclick="focusTimer.adjust(60000)">+1m</button>
+    </div>
+
+    <button class="primary" id="focus-resume" style="display:none;"
+            onclick="resumeTask()">I'm back →</button>
+    <button class="primary" onclick="done()">Done ✓</button>
+    <button id="focus-plus5" style="display:none;" onclick="focusTimer.adjust(300000)">+5 more minutes</button>
+    <button id="focus-pause" onclick="pulledAway()">⏸ I got pulled away</button>
+    <button id="focus-swap" onclick="swapIt()">Swap it for something else</button>
+    <button id="focus-skip" style="display:none;" onclick="skipTask()">Skip it — next</button>
+    <button class="quiet" id="focus-park" onclick="parkIt()">Park it — it’ll keep</button>
+    <button class="quiet" id="focus-endrun" style="display:none;" onclick="endRun()">End the run</button>
+    <button class="quiet nudge-toggle" onclick="toggleNudges()">🔔 Nudges on</button>
+  </section>
+
+  <!-- SCREEN 8 · BREAK -->
+  <section class="screen" id="screen-break">
+    <p class="eyebrow">Break</p>
+    <h1>Breathe.</h1>
+    <p class="flash" id="break-flash"></p>
+
+    <div class="timer-face resting" id="break-face">
+      <svg viewBox="0 0 200 200" aria-hidden="true">
+        <circle class="ring-track" cx="100" cy="100" r="84"/>
+        <circle class="ring-meter" id="break-meter" cx="100" cy="100" r="84"/>
+      </svg>
+      <div class="timer-clock" id="break-clock">0:00</div>
+    </div>
+
+    <p class="care" id="care-line"></p>
+    <p class="time-range" id="break-range"></p>
+    <p class="nudge-note" id="break-note" aria-live="polite"></p>
+    <p class="time-range" id="break-upnext"></p>
+
+    <div class="row adjust">
+      <button onclick="breakTimer.adjust(-60000)">−1m</button>
+      <button onclick="breakTimer.adjust(-30000)">−30s</button>
+      <button onclick="breakTimer.adjust(30000)">+30s</button>
+      <button onclick="breakTimer.adjust(60000)">+1m</button>
+    </div>
+
+    <button class="primary" onclick="startNextFromBreak()">Start next →</button>
+    <button class="quiet" onclick="endRun()">End the run</button>
+  </section>
+
+  <!-- SCREEN 9 · RUN SUMMARY -->
+  <section class="screen" id="screen-summary">
+    <p class="eyebrow">Run complete</p>
+    <h1 id="sum-headline">That was a run.</h1>
+    <p class="sub" id="sum-sub"></p>
+
+    <ul class="wins" id="sum-list"></ul>
+    <p class="build-note" id="sum-parked"></p>
+
+    <button class="primary" onclick="backToStart()">Back to start</button>
+    <button onclick="finishToRest()">I'm good — rest mode</button>
+  </section>
+
+  <!-- SCREEN 10 · Done (single-task path) -->
+  <section class="screen" id="screen-done">
+    <p class="eyebrow">That counts</p>
+    <h1 id="done-headline">Win.</h1>
+    <p class="sub" id="done-sub"></p>
+
+    <ul class="wins" id="win-list"></ul>
+
+    <button class="primary" onclick="goTo('screen-task')">One more thing</button>
+    <button onclick="goTo('screen-rest')">I'm good for now</button>
+  </section>
+
+  <!-- SCREEN 11 · Rest -->
+  <section class="screen" id="screen-rest">
+    <p class="eyebrow">Rest mode</p>
+    <h1>Rest is maintenance on the machine that makes everything else.</h1>
+    <p class="sub" id="rest-sub">Close this tab. It'll be here when you're back.</p>
+
+    <button class="quiet" onclick="backToStart()">← Start again</button>
+  </section>
+
+</div><!-- /view-now -->
+
+<!-- ╔══════════════ VIEW 2 · ROUTINES ══════════╗
+     Build the plan once on a good day; launch it
+     with one tap on a foggy one. -->
+<div class="view" id="view-routines">
+
+  <div id="rt-list-wrap">
+    <p class="eyebrow">Routines</p>
+    <h1>Plans that keep.</h1>
+    <p class="sub">Build it once. Launch it whenever. Edit it as life changes.</p>
+
+    <div id="rt-list"></div>
+    <p class="build-note" id="rt-list-note"></p>
+
+    <button class="primary" onclick="newRoutine()">＋ New routine</button>
+  </div>
+
+  <div id="rt-editor" style="display:none;">
+    <p class="eyebrow" id="rt-ed-eyebrow">New routine</p>
+    <h1>Shape it.</h1>
+
+    <p class="set-label">Routine name</p>
+    <input type="text" id="rt-name" placeholder="Morning reset, Breakfast, Wind-down…"
+           aria-label="Routine name">
+
+    <p class="set-label">Break between steps (minutes — 0 for none)</p>
+    <input type="number" id="rt-break" min="0" max="30" step="0.5" value="5"
+           aria-label="Break length in minutes">
+
+    <p class="set-label">Steps — any minutes you want, 1 to 120</p>
+    <div id="rt-steps"></div>
+
+    <div class="input-row">
+      <input type="text" id="rt-step-input" placeholder="Add a step…"
+             aria-label="Step name">
+      <button id="rt-step-mic" class="mic-btn" onclick="listen('rt-step-input','rt-step-mic')"
+              aria-label="Speak a step">🎙️</button>
+    </div>
+    <div class="input-row">
+      <input type="number" id="rt-step-min" min="1" max="120" step="1" value="5"
+             aria-label="Step minutes" style="max-width:8rem;">
+      <button style="flex:1; margin:0;" onclick="addRoutineStep()">＋ Add step</button>
+    </div>
+
+    <p class="build-note" id="rt-note"></p>
+
+    <button class="primary" onclick="saveRoutine()">Save routine</button>
+    <button class="quiet" onclick="cancelRoutineEdit()">Cancel</button>
+  </div>
+
+</div><!-- /view-routines -->
+
+<!-- ╔══════════════ VIEW · LIST ════════════════╗
+     The holding pen. Capture on top, the living
+     list beneath. Things land here, get done,
+     and leave. -->
+<div class="view" id="view-list">
+  <p class="eyebrow">List</p>
+  <h1>Sooner than later.</h1>
+  <p class="sub">A holding pen for errands — yours or texted to you. Dump them here,
+    organize when you can, pull them into a run when you've got the charge.
+    Things land, get done, and leave. Tap any item to rename it.</p>
+
+  <div class="input-row">
+    <textarea id="list-input" rows="2"
+           placeholder="Add an item — or paste a whole list, one per line…"
+           aria-label="Add a list item"
+           style="flex:1; font:inherit; padding:1rem 1.1rem; border-radius:var(--radius);
+                  border:1px solid var(--edge); background:var(--adobe); color:var(--bone);
+                  font-size:1.1rem; resize:vertical; min-height:3.4rem;"></textarea>
+    <button id="list-mic" class="mic-btn" onclick="listen('list-input','list-mic')"
+            aria-label="Speak an item">🎙️</button>
+  </div>
+  <button onclick="addListItems()">＋ Add to List</button>
+  <p class="build-note" id="list-add-note">One per line, or commas — paste a whole text and it splits.</p>
+
+  <div id="list-items"></div>
+
+  <div id="list-actions" style="display:none;">
+    <button class="quiet" onclick="clearListAged()">Clear the ones waiting longest</button>
+    <button class="quiet" onclick="clearListAll()">Clear the whole List</button>
+  </div>
+</div><!-- /view-list -->
+
+<!-- ╔══════════════ VIEW 3 · TIMER ═════════════╗ -->
+<div class="view" id="view-timer">
+  <p class="eyebrow">Timer</p>
+  <h1>Time you can see.</h1>
+  <p class="sub">Pick a window. Watch it drain. The nudges will keep you posted.</p>
+
+  <div class="timer-face" id="solo-face">
+    <svg viewBox="0 0 200 200" aria-hidden="true">
+      <circle class="ring-track" cx="100" cy="100" r="84"/>
+      <circle class="ring-meter" id="solo-meter" cx="100" cy="100" r="84"/>
+    </svg>
+    <div class="timer-clock" id="solo-clock">0:00</div>
+  </div>
+
+  <p class="time-range" id="solo-range"></p>
+  <p class="nudge-note" id="solo-note" aria-live="polite"></p>
+
+  <div class="chips" id="solo-durations"></div>
+
+  <div class="row adjust">
+    <button onclick="soloTimer.adjust(-60000)">−1m</button>
+    <button onclick="soloTimer.adjust(-30000)">−30s</button>
+    <button onclick="soloTimer.adjust(30000)">+30s</button>
+    <button onclick="soloTimer.adjust(60000)">+1m</button>
+  </div>
+
+  <button class="primary" id="solo-start" onclick="soloStart()">Start</button>
+  <div class="row">
+    <button id="solo-pause" onclick="soloPauseResume()" style="display:none;">Pause</button>
+    <button id="solo-skiprest" onclick="skipSoloRest()" style="display:none;">Skip rest</button>
+    <button id="solo-reset" onclick="soloReset()" style="display:none;">Reset</button>
+  </div>
+  <button class="quiet nudge-toggle" onclick="toggleNudges()">🔔 Nudges on</button>
+</div><!-- /view-timer -->
+
+<!-- ╔══════════════ VIEW 4 · WINS ══════════════╗ -->
+<div class="view" id="view-wins">
+  <p class="eyebrow">Wins</p>
+  <h1 id="wins-headline">Today</h1>
+  <p class="sub" id="wins-sub"></p>
+
+  <ul class="wins" id="wins-today"></ul>
+
+  <p class="chip-label" id="past-label" style="display:none;">Past days</p>
+  <div id="wins-past"></div>
+</div><!-- /view-wins -->
+
+<!-- ╔══════════════ VIEW 5 · YOU ═══════════════╗ -->
+<div class="view" id="view-you">
+  <p class="eyebrow">You</p>
+  <h1>Make it yours.</h1>
+  <p class="sub">Name, affirmations, tasks, voice, nudges — saved on this device.</p>
+
+  <!-- beta feedback — frictionless on purpose -->
+  <div id="feedback-block" style="background:var(--adobe); border:1px solid var(--edge);
+       border-left:3px solid var(--sage); border-radius:14px; padding:.9rem 1rem; margin-bottom:1.4rem;">
+    <p style="font-weight:650; margin-bottom:.2rem;">Testing Alongside? 💬</p>
+    <p class="sub" style="margin-bottom:.8rem; font-size:.9rem;">
+      Your thoughts shape where it goes next — the good, the broken, the missing.</p>
+    <button class="primary" onclick="openFeedbackForm()">Send feedback</button>
+    <button class="quiet" onclick="emailFeedback()">…or email directly</button>
+  </div>
+
+  <p class="set-label">Your name</p>
+  <input type="text" id="set-name" aria-label="Your name">
+
+  <p class="set-label">Your four affirmations</p>
+  <input type="text" id="set-aff-1" aria-label="Affirmation one">
+  <input type="text" id="set-aff-2" aria-label="Affirmation two">
+  <input type="text" id="set-aff-3" aria-label="Affirmation three">
+  <input type="text" id="set-aff-4" aria-label="Affirmation four">
+
+  <p class="set-label">Quick tasks (the tap-instead-of-type chips)</p>
+  <div class="input-row">
+    <input type="text" id="set-task-input" placeholder="Add a quick task…"
+           aria-label="Add a quick task">
+    <button id="set-task-mic" class="mic-btn" onclick="listen('set-task-input','set-task-mic')"
+            aria-label="Speak a quick task">🎙️</button>
+  </div>
+  <button onclick="addSettingsTask()">+ Add quick task</button>
+  <div id="set-task-list"></div>
+
+  <p class="set-label">Screen wash (the color glow on nudges)</p>
+  <button id="set-flash" onclick="toggleFlashSetting()">Screen wash: On</button>
+
+  <p class="set-label">Keep screen awake while timers run</p>
+  <button id="set-wake" onclick="toggleWakeSetting()">Keep awake: On</button>
+
+  <p class="set-label">Timer tab auto-rest after each work window</p>
+  <button id="set-rest" onclick="toggleRestSetting()">Auto-rest: On</button>
+
+  <p class="set-label">List: flag items waiting longer than (days)</p>
+  <input type="number" id="set-listage" min="1" max="60" step="1" value="7"
+         aria-label="List aging limit in days">
+  <p class="sub" style="margin-top:-.4rem; font-size:.88rem;">
+    Items older than this wear a clay ⚠ flag. Never auto-deleted — just a nudge.</p>
+
+  <p class="set-label">List: offer to pull items when starting…</p>
+  <div class="chips" id="set-pullscope">
+    <button type="button" data-scope="both" onclick="pickPullScope('both')">Middle &amp; Charge</button>
+    <button type="button" data-scope="high" onclick="pickPullScope('high')">Charge only</button>
+    <button type="button" data-scope="off" onclick="pickPullScope('off')">Never</button>
+  </div>
+
+  <div id="voice-block">
+    <p class="set-label">Nudge voice (from this device's installed voices)</p>
+    <select id="set-voice" aria-label="Choose a voice"></select>
+    <button onclick="testVoice()">▶ Test this voice</button>
+  </div>
+
+  <p class="set-label">The nudge mixing board — chime, voice, or off</p>
+  <div id="set-channels"></div>
+
+  <p class="build-note" id="settings-note"></p>
+
+  <button class="primary" onclick="saveSettings()">Save</button>
+  <button class="quiet" onclick="resetSettings()">Reset to the file's defaults</button>
+
+  <p class="set-label">Move your setup to another device</p>
+  <p class="sub" style="margin-bottom:.8rem; font-size:.92rem;">
+    Carry your name, affirmations, tasks, voice, nudge choices, and every
+    routine to your other device. Export here, import there. One-time copy,
+    not live sync.</p>
+
+  <div class="row">
+    <button onclick="exportSetup()">⬆ Export setup</button>
+    <button onclick="showImportBox()">⬇ Import setup</button>
+  </div>
+
+  <div id="export-area" style="display:none;">
+    <p class="set-label">Your setup code — copy all of it</p>
+    <textarea id="export-text" readonly aria-label="Your setup code"
+      style="width:100%; min-height:7rem; padding:.9rem 1rem; border-radius:var(--radius);
+             border:1px solid var(--edge); background:var(--adobe); color:var(--bone);
+             font-family:monospace; font-size:.82rem; resize:vertical; margin-bottom:.6rem;"></textarea>
+    <div class="row">
+      <button onclick="copyExport()">📋 Copy to clipboard</button>
+      <button onclick="downloadExport()">💾 Save as file</button>
+    </div>
+    <p class="build-note" id="export-note"></p>
+  </div>
+
+  <div id="import-area" style="display:none;">
+    <p class="set-label">Paste your setup code here</p>
+    <textarea id="import-text" placeholder="Paste the code from your other device…"
+      aria-label="Paste setup code"
+      style="width:100%; min-height:7rem; padding:.9rem 1rem; border-radius:var(--radius);
+             border:1px solid var(--edge); background:var(--adobe); color:var(--bone);
+             font-family:monospace; font-size:.82rem; resize:vertical; margin-bottom:.6rem;"></textarea>
+    <button class="primary" onclick="importSetup()">Bring it in</button>
+    <p class="build-note" id="import-note"></p>
+  </div>
+</div><!-- /view-you -->
+
+</main>
+
+<nav class="tabbar" aria-label="Alongside sections">
+  <button id="tab-now" class="active" onclick="switchTab('now')">
+    <span class="t-ico">🎯</span><span class="t-lab">Now</span></button>
+  <button id="tab-list" onclick="switchTab('list')">
+    <span class="t-ico">📋</span><span class="t-lab">List</span>
+    <span class="tab-badge" id="list-badge" style="display:none;">0</span></button>
+  <button id="tab-routines" onclick="switchTab('routines')">
+    <span class="t-ico">🔁</span><span class="t-lab">Routines</span></button>
+  <button id="tab-timer" onclick="switchTab('timer')">
+    <span class="t-ico">⏳</span><span class="t-lab">Timer</span></button>
+  <button id="tab-wins" onclick="switchTab('wins')">
+    <span class="t-ico">✓</span><span class="t-lab">Wins</span></button>
+  <button id="tab-you" onclick="switchTab('you')">
+    <span class="t-ico">⚙️</span><span class="t-lab">You</span></button>
+</nav>
+
+<footer>Alongside v0.20 · an ORO project</footer>
+
+<script>
+/* ════════════════════════════════════════════════
+   3. THE MUSCLE — everything that moves
+   ════════════════════════════════════════════════ */
+
+/* ── 3a. 🔧 PERSONAL SETTINGS (the file's defaults)
+   Most of these can now be changed in the ⚙️ You
+   tab — saved choices override what's written
+   here. The rest is 🔧 yours in the code. */
+
+const SETTINGS = {
+  name: "",                                        // 🔧 blank by design — first run asks. (Set a name here only if you want to skip the welcome for a personal copy.)
+
+  affirmations: [                                  // 🔧 default daily four
+    "I am Healthy.",
+    "I am Wealthy.",
+    "I am Loved.",
+    "I am Happy."
+  ],
+
+  quickPicks: [                                    // 🔧 default quick tasks
+    "Dishes", "Water", "Laundry",
+    "5-min reset", "Step outside", "One page"
+  ],
+
+  midLines: [                                      // 🔧 STEADY's three lines
+    "Steady is a superpower.",
+    "A few things, done with care.",
+    "No heroics. Just motion."
+  ],
+
+  chargeLines: [                                   // 🔧 IGNITE's three lines
+    "You've got fire today.",
+    "Spend it on purpose.",
+    "Stack them up. Knock them down."
+  ],
+
+  timerMinutes: [5, 10, 15, 25, 45],               // 🔧 timer window choices
+
+  breaks: {                                        // 🔧 break lengths (minutes)
+    mid:    5,
+    charge: 2.5
+  },
+
+  runShape: {                                      // 🔧 batch sizes per mode
+    mid:    { cap: 3,        hint: "Two or three. Three is the lid." },
+    charge: { cap: Infinity, hint: "Aim for five or more if you've got it." }
+  },
+
+  carePrompts: [                                   // 🔧 break-time body care
+    "Water first. Then everything else.",
+    "Snack if you haven't eaten.",
+    "Shoulders down. Unclench the jaw.",
+    "Stand up, stretch tall, sip something.",
+    "Eyes off the screen for a minute."
+  ],
+
+  nudgeWords: {                                    // 🔧 what each nudge says
+    half:   "Halfway.",
+    minute: "One minute.",
+    thirty: "Thirty seconds.",
+    end:    "Time."
+  },
+
+  /* 🔧 chime, voice, or off — per moment. The You tab
+     edits these; saved choices win. */
+  nudgeChannel: {
+    half:      "chime",
+    minute:    "chime",
+    thirty:    "chime",
+    countdown: "chime",     // the final-ten ticks
+    end:       "chime",
+    breakend:  "chime"      // break's over / rest's over
+  },
+
+  flashOn: true,            // 🔧 screen wash on nudges
+  voiceName: null,          // 🔧 null = the device's default voice
+  wakeLockOn: true,         // 🔧 keep screen awake while timers run
+  timerRestOn: true,        // 🔧 Timer tab follows work with a rest
+  listAgeDays: 7,           // 🔧 List items flag "waiting a while" past this
+  listPullScope: "both",    // 🔧 where the List offers to pull: "both" | "high" | "off"
+
+  /* 🔧 beta feedback — where the Send-feedback button points */
+  feedback: {
+    formUrl: "https://forms.gle/CPm1HwMhcazdt2H26",
+    email:   "sorens.it@gmail.com"
+  },
+
+  /* 🔧 auto-rest tiers for the Timer tab: [up-to-minutes, rest] */
+  timerRestTiers: [
+    [5,  2],                //  ≤ 5 min work → 2:00 rest
+    [15, 2.5],              //  ≤ 15 min     → 2:30 rest
+    [999, 5]                //  anything more → 5:00 rest
+  ],
+
+  /* 🔧 the screen wash per nudge — a traffic light in desert
+     colors. rgba so the glow stays translucent. The ticking
+     countdown gets NO flash on purpose (ten pulses in ten
+     seconds = strobe, hard no). */
+  nudgeFlash: {
+    half:   "rgba(143, 185, 150, 0.30)",   // sage — green light
+    minute: "rgba(217, 164, 65, 0.28)",    // gold — yellow light
+    thirty: "rgba(201, 111, 94, 0.32)",    // clay — red light
+    end:    "rgba(217, 164, 65, 0.30)",    // gold again — it's done
+    breakend:"rgba(143, 185, 150, 0.28)"   // sage — rest's over, no rush
+  },
+
+  encouragements: [                                // 🔧 lines shown while focusing
+    "Small is still forward.",
+    "You showed up. That's the hard part.",
+    "One thing. The rest of the world can wait.",
+    "The dishwasher doesn't know it's a victory. You do.",
+    "Four hours well spent beats eight hours of pretending.",
+    "Done is a love letter to future you."
+  ]
+};
+
+/* labels the mixing board shows for each moment */
+const MOMENT_LABELS = {
+  half:      "Halfway",
+  minute:    "One minute",
+  thirty:    "Thirty seconds",
+  countdown: "Final-ten countdown",
+  end:       "Time's up",
+  breakend:  "Break's over"
+};
+
+/* which rest follows a Timer-tab work window */
+function restFor(workMinutes){
+  for(const tier of SETTINGS.timerRestTiers){
+    if(workMinutes <= tier[0]) return tier[1];
+  }
+  return 5;
+}
+
+/* ── 3b. MEMORY ─────────────────────────────────── */
+
+const store = {
+  ok: false,
+  mem: {},
+  init(){
+    try{
+      localStorage.setItem("__alongside_test","1");
+      localStorage.removeItem("__alongside_test");
+      this.ok = true;
+    }catch(e){ this.ok = false; }
+  },
+  get(key, fallback){
+    try{
+      if(this.ok){
+        const raw = localStorage.getItem(key);
+        return raw === null ? fallback : JSON.parse(raw);
+      }
+    }catch(e){}
+    return (key in this.mem) ? this.mem[key] : fallback;
+  },
+  set(key, value){
+    try{
+      if(this.ok){ localStorage.setItem(key, JSON.stringify(value)); return; }
+    }catch(e){}
+    this.mem[key] = value;
+  },
+  remove(key){
+    try{ if(this.ok){ localStorage.removeItem(key); return; } }catch(e){}
+    delete this.mem[key];
+  },
+  keys(prefix){
+    try{
+      if(this.ok){
+        return Object.keys(localStorage).filter(k => k.startsWith(prefix));
+      }
+    }catch(e){}
+    return Object.keys(this.mem).filter(k => k.startsWith(prefix));
+  }
+};
+
+/* saved profile (from the You tab) overrides the file's defaults */
+function loadProfile(){
+  const saved = store.get("profile", null);
+  if(!saved) return;
+  if(saved.name){ SETTINGS.name = saved.name; }
+  if(Array.isArray(saved.affirmations) && saved.affirmations.length === 4){
+    SETTINGS.affirmations = saved.affirmations;
+  }
+  if(Array.isArray(saved.quickPicks) && saved.quickPicks.length){
+    SETTINGS.quickPicks = saved.quickPicks;
+  }
+  if(typeof saved.flashOn === "boolean"){ SETTINGS.flashOn = saved.flashOn; }
+  if(typeof saved.wakeLockOn === "boolean"){ SETTINGS.wakeLockOn = saved.wakeLockOn; }
+  if(typeof saved.timerRestOn === "boolean"){ SETTINGS.timerRestOn = saved.timerRestOn; }
+  if(typeof saved.listAgeDays === "number" && saved.listAgeDays > 0){
+    SETTINGS.listAgeDays = saved.listAgeDays;
+  }
+  if(["both","high","off"].includes(saved.listPullScope)){
+    SETTINGS.listPullScope = saved.listPullScope;
+  }
+  if(saved.voiceName){ SETTINGS.voiceName = saved.voiceName; }
+  if(saved.channels){
+    Object.keys(SETTINGS.nudgeChannel).forEach(k => {
+      if(["chime","voice","off"].includes(saved.channels[k])){
+        SETTINGS.nudgeChannel[k] = saved.channels[k];
+      }
+    });
+  }
+}
+
+function todayKey(){
+  const d = new Date();
+  return "wins-" + d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate();
+}
+
+function clockTime(date){
+  return date.toLocaleTimeString([], { hour:"numeric", minute:"2-digit" });
+}
+
+function fmtClock(ms){
+  const s = Math.ceil(ms / 1000);
+  return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+}
+
+/* ── 3c. THE CHIMES ─────────────────────────────
+   The browser has a synthesizer built in (Web
+   Audio API), so Alongside MAKES its chimes —
+   soft sines in C major. A wind chime, not an
+   alarm clock. */
+
+const sound = {
+  enabled: true,
+  ctx: null,
+
+  ready(){
+    if(!this.enabled) return;
+    try{
+      if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      if(this.ctx.state === "suspended") this.ctx.resume();
+    }catch(e){}
+  },
+
+  tone(freq, when, dur, vol){
+    dur = dur || 0.30;          // 🔧 default note length (seconds)
+    vol = vol || 0.16;          // 🔧 default volume (0–1)
+    const t = this.ctx.currentTime + when;
+    const osc  = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(vol, t + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.connect(gain); gain.connect(this.ctx.destination);
+    osc.start(t); osc.stop(t + dur + 0.05);
+  },
+
+  /* 🔧 melodies: [pitch Hz, start offset s, length s, volume]
+     G4=392  C5=523  E5=659  G5=784  C6=1047 */
+  play(name){
+    if(!this.enabled || !this.ctx) return;
+    try{
+      if(this.ctx.state === "suspended") this.ctx.resume();
+      const tunes = {
+        half:   [[392, 0, .50, .24], [523, .22, .50, .24], [659, .44, .80, .24]],
+        minute: [[523, 0], [659, .16]],
+        thirty: [[659, 0], [784, .16]],
+        tick:      [[659, 0, .12, .14]],
+        tickFinal: [[784, 0, .14, .19]],
+        end:    [[523, 0], [659, .14], [784, .28], [1047, .42]],
+        ready:  [[523, 0, .40, .18], [784, .18, .50, .18]],
+        win:    [[659, 0], [1047, .15]]
+      };
+      (tunes[name] || []).forEach(n => this.tone(n[0], n[1], n[2], n[3]));
+    }catch(e){}
+  }
+};
+
+/* ── 3d. THE VOICE ──────────────────────────────
+   speechSynthesis is the browser's built-in
+   speaking engine. The voices it offers come
+   from the DEVICE — different genders, accents,
+   and languages depending on what's installed.
+   Pick one in the You tab. */
+
+const voice = {
+  list: [],
+  supported(){ return ("speechSynthesis" in window); },
+  init(){
+    if(!this.supported()) return;
+    const load = () => {
+      this.list = window.speechSynthesis.getVoices() || [];
+      paintVoiceSelect();
+    };
+    load();
+    try{ window.speechSynthesis.onvoiceschanged = load; }catch(e){}
+  },
+  speak(text){
+    if(!sound.enabled) return;            // master mute covers voice too
+    if(!this.supported()) return;
+    try{
+      const u = new SpeechSynthesisUtterance(text);
+      const v = this.list.find(x => x.name === SETTINGS.voiceName);
+      if(v){ u.voice = v; }
+      u.rate = 1; u.pitch = 1; u.volume = 0.95;
+      window.speechSynthesis.cancel();    // don't pile up; latest wins
+      window.speechSynthesis.speak(u);
+    }catch(e){}
+  }
+};
+
+function paintVoiceSelect(){
+  const sel = document.getElementById("set-voice");
+  if(!sel) return;
+  const current = SETTINGS.voiceName;
+  sel.innerHTML = "";
+  const def = document.createElement("option");
+  def.value = ""; def.textContent = "Device default voice";
+  sel.appendChild(def);
+  voice.list.forEach(v => {
+    const o = document.createElement("option");
+    o.value = v.name;
+    o.textContent = v.name + " · " + v.lang;
+    if(v.name === current){ o.selected = true; }
+    sel.appendChild(o);
+  });
+}
+
+function testVoice(){
+  const sel = document.getElementById("set-voice");
+  const prev = SETTINGS.voiceName;
+  SETTINGS.voiceName = sel.value || null;
+  voice.speak("Halfway. This is your Alongside voice.");
+  SETTINGS.voiceName = prev;   // only Save commits it
+}
+
+/* speak or chime or stay silent, per the mixing board */
+function nudgeAudio(moment, chimeName, spokenText){
+  const ch = SETTINGS.nudgeChannel[moment] || "chime";
+  if(ch === "voice"){ voice.speak(spokenText); }
+  else if(ch === "chime"){ sound.play(chimeName); }
+  /* "off" says nothing — the words on screen still show */
+}
+
+function toggleNudges(){
+  sound.enabled = !sound.enabled;
+  store.set("nudges-on", sound.enabled);
+  paintNudgeToggles();
+  if(sound.enabled) sound.ready();
+}
+
+function paintNudgeToggles(){
+  document.querySelectorAll(".nudge-toggle").forEach(b => {
+    b.textContent = sound.enabled ? "🔔 Nudges on" : "🔕 Nudges off";
+  });
+}
+
+/* one slow pulse of color over the whole screen */
+let washTimer = null;
+function flashScreen(color){
+  if(!SETTINGS.flashOn) return;
+  const wash = document.getElementById("screenwash");
+  if(!wash || !color) return;
+  clearTimeout(washTimer);
+  wash.style.background = color;
+  wash.style.opacity = "1";
+  washTimer = setTimeout(() => { wash.style.opacity = "0"; }, 380);
+}
+
+/* ── THE KEEP-AWAKE ─────────────────────────────
+   While any timer runs, ask the phone to keep the
+   screen on (Wake Lock API). Sleeping screens
+   silence web pages by design; an awake screen
+   keeps the chimes, voices, and washes flowing.
+   Refcounted: several timers can share the lock. */
+const awake = {
+  lock: null,
+  count: 0,
+  supported(){ return ("wakeLock" in navigator); },
+  async acquire(){
+    this.count++;
+    if(!SETTINGS.wakeLockOn || !this.supported() || this.lock) return;
+    try{
+      this.lock = await navigator.wakeLock.request("screen");
+      this.lock.addEventListener("release", () => { this.lock = null; });
+    }catch(e){ this.lock = null; }
+  },
+  release(){
+    this.count = Math.max(0, this.count - 1);
+    if(this.count === 0 && this.lock){
+      try{ this.lock.release(); }catch(e){}
+      this.lock = null;
+    }
+  }
+};
+/* the OS drops wake locks when the page hides;
+   pick it back up the moment we're visible again */
+document.addEventListener("visibilitychange", () => {
+  if(document.visibilityState === "visible" && awake.count > 0 && !awake.lock){
+    awake.count--;            /* acquire() will bump it back */
+    awake.acquire();
+  }
+});
+
+/* ── 3e. STATE ─────────────────────────────────── */
+let currentTask = "";
+let taskStartedAt = null;
+let chosenMinutes = 0;
+
+let session = null;
+let draft = null;
+let draftMinutes = 15;         // 🔧 default window for new run tasks
+
+/* ── 3f. TABS & NAVIGATION ─────────────────────── */
+function switchTab(name){
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  document.getElementById("view-" + name).classList.add("active");
+  document.querySelectorAll(".tabbar button").forEach(b => b.classList.remove("active"));
+  document.getElementById("tab-" + name).classList.add("active");
+  window.scrollTo(0, 0);
+  if(name === "wins"){ renderWinsTab(); }
+  if(name === "you"){ openSettings(); }
+  if(name === "routines"){ openRoutinesTab(); }
+  if(name === "list"){ openListTab(); }
+}
+
+function goTo(id){
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo(0, 0);
+  if(id === "screen-ground"){ renderLines("affirmation-lines", SETTINGS.affirmations); }
+  if(id === "screen-steady"){ renderLines("steady-lines", SETTINGS.midLines); }
+  if(id === "screen-ignite"){ renderLines("ignite-lines", SETTINGS.chargeLines); }
+}
+
+/* ── 3g. THE TIMER ENGINE ───────────────────────
+   One factory, three timers: focus, break, solo.
+   Accuracy trick: remember the moment it should
+   END, ask "how far away is that?" every tick.
+   adjust(±ms) bends a live window (10s floor).
+   Quiet mode (breaks) skips the nudges. */
+
+const RING = 2 * Math.PI * 84;
+
+function buildNudges(totalMs){
+  const list = [
+    { ms: Math.round(totalMs / 2), name: "half"   },
+    { ms: 60000,                   name: "minute" },
+    { ms: 30000,                   name: "thirty" }
+  ].filter(n => n.ms < totalMs && n.ms >= 5000);
+
+  const half = list.find(n => n.name === "half");
+  if(half && list.some(n => n !== half && Math.abs(n.ms - half.ms) < 2000)){
+    list.splice(list.indexOf(half), 1);
+  }
+  return list;
+}
+
+function createTimer(ui){
+  let totalMs = 0, endAt = 0, leftMs = 0;
+  let ticking = null, running = false, paused = false, quiet = false;
+  let startedAt = null, onFinish = null;
+  let nudges = [], fired = new Set(), flashTimer = null;
+  let lastTick = null;
+  let lastDrawAt = 0;   /* for sleep catch-up */
+
+  function paintRange(){
+    ui.range.innerHTML = "<strong>" + clockTime(startedAt) + "</strong> → <strong>"
+                       + clockTime(new Date(endAt)) + "</strong>";
+  }
+
+  function paintFace(ms){
+    ui.clock.textContent = fmtClock(ms);
+    ui.meter.style.strokeDashoffset = RING * (1 - ms / (totalMs || 1));
+  }
+
+  function nudge(name){
+    fired.add(name);
+    ui.note.textContent = SETTINGS.nudgeWords[name] || "";
+    nudgeAudio(name, name, SETTINGS.nudgeWords[name]);
+    flashScreen(SETTINGS.nudgeFlash[name]);
+    const buzz = { half: [60, 70, 60] };
+    try{ if(navigator.vibrate) navigator.vibrate(buzz[name] || 40); }catch(e){}
+    ui.face.classList.add("nudged");
+    clearTimeout(flashTimer);
+    flashTimer = setTimeout(() => ui.face.classList.remove("nudged"), 700);
+  }
+
+  function countTick(s){
+    lastTick = s;
+    ui.note.textContent = s;
+    nudgeAudio("countdown", s <= 3 ? "tickFinal" : "tick", String(s));
+    if(s <= 3){
+      try{ if(navigator.vibrate) navigator.vibrate(30); }catch(e){}
+    }
+  }
+
+  function draw(){
+    leftMs = Math.max(0, endAt - Date.now());
+
+    /* CATCH-UP: if the phone slept, the gap between draws is
+       big. Absorb every nudge that passed in silence instead
+       of dog-piling chimes, and re-sync the countdown. If time
+       ran out while away, the finish below still speaks once. */
+    const now = Date.now();
+    if(lastDrawAt && (now - lastDrawAt) > 3000 && running){
+      nudges.forEach(n => { if(leftMs <= n.ms){ fired.add(n.name); } });
+      const sec = Math.ceil(leftMs / 1000);
+      lastTick = (sec <= 10) ? sec : null;
+      if(leftMs > 0){ ui.note.textContent = "Caught up — " + fmtClock(leftMs) + " left."; }
+    }
+    lastDrawAt = now;
+
+    paintFace(leftMs);
+    ui.face.classList.toggle("closing", !quiet && leftMs > 0 && leftMs <= 60000);
+
+    if(!quiet){
+      nudges.forEach(n => {
+        if(!fired.has(n.name) && leftMs <= n.ms && leftMs > 0){ nudge(n.name); }
+      });
+      const secLeft = Math.ceil(leftMs / 1000);
+      if(running && leftMs > 0 && secLeft <= 10 && secLeft !== lastTick){
+        countTick(secLeft);
+      }
+    }
+
+    if(leftMs <= 0 && running){
+      stopTicking();
+      running = false;
+      awake.release();
+      ui.face.classList.remove("closing");
+      if(quiet){
+        ui.note.textContent = "Ready when you are.";
+        nudgeAudio("breakend", "ready", "Break's over.");
+        flashScreen(SETTINGS.nudgeFlash.breakend);
+        try{ if(navigator.vibrate) navigator.vibrate(40); }catch(e){}
+      }else{
+        ui.note.textContent = SETTINGS.nudgeWords.end;
+        nudgeAudio("end", "end", SETTINGS.nudgeWords.end);
+        flashScreen(SETTINGS.nudgeFlash.end);
+        try{ if(navigator.vibrate) navigator.vibrate([180, 90, 180]); }catch(e){}
+      }
+      if(onFinish) onFinish();
+    }
+  }
+
+  function startTicking(){ stopTicking(); ticking = setInterval(draw, 250); }
+  function stopTicking(){ if(ticking){ clearInterval(ticking); ticking = null; } }
+
+  return {
+    start(minutes, finishCallback, beQuiet){
+      totalMs = minutes * 60 * 1000;
+      startedAt = new Date();
+      endAt = Date.now() + totalMs;
+      onFinish = finishCallback || null;
+      quiet = !!beQuiet;
+      nudges = quiet ? [] : buildNudges(totalMs);
+      fired = new Set();
+      lastTick = null;
+      lastDrawAt = Date.now();
+      running = true; paused = false;
+      ui.note.textContent = "";
+      sound.ready();
+      awake.acquire();
+      paintRange();
+      draw(); startTicking();
+    },
+    pause(){
+      if(!running || paused) return;
+      paused = true; stopTicking();
+      leftMs = Math.max(0, endAt - Date.now());
+      awake.release();          /* stepped away — let the screen rest */
+    },
+    resume(){
+      if(!running || !paused) return;
+      paused = false; endAt = Date.now() + leftMs;
+      lastDrawAt = Date.now();
+      awake.acquire();
+      paintRange();
+      draw(); startTicking();
+    },
+    /* bend the live window by ±ms — floor: 10s remaining */
+    adjust(deltaMs){
+      if(!running) return;
+      const now = Date.now();
+      const curEnd = paused ? (now + leftMs) : endAt;
+      let newEnd = curEnd + deltaMs;
+      const minEnd = now + 10000;
+      if(newEnd < minEnd){ newEnd = minEnd; }
+      const applied = newEnd - curEnd;
+      if(applied === 0){
+        ui.note.textContent = "That's the floor — tap Done if you're done.";
+        return;
+      }
+      totalMs = Math.max(10000, totalMs + applied);
+      if(paused){
+        leftMs = newEnd - now;
+        paintFace(leftMs);
+      }else{
+        endAt = newEnd;
+      }
+      nudges = quiet ? [] : buildNudges(totalMs);
+      fired = new Set();
+      lastTick = null;
+      ui.note.textContent = (applied > 0 ? "+" : "−") + fmtClock(Math.abs(applied));
+      paintRange();
+      if(!paused){ draw(); }
+    },
+    reset(){
+      stopTicking();
+      if(running && !paused){ awake.release(); }
+      running = false; paused = false;
+      lastTick = null;
+      lastDrawAt = 0;
+      ui.clock.textContent = "0:00";
+      ui.meter.style.strokeDashoffset = 0;
+      ui.range.textContent = "";
+      ui.note.textContent = "";
+      ui.face.classList.remove("closing", "nudged");
+      clearTimeout(flashTimer);
+    },
+    isRunning(){ return running; },
+    isPaused(){ return paused; },
+    remainingMs(){
+      if(!running) return 0;
+      return paused ? leftMs : Math.max(0, endAt - Date.now());
+    }
+  };
+}
+
+const focusTimer = createTimer({
+  face:  document.getElementById("focus-face"),
+  meter: document.getElementById("focus-meter"),
+  clock: document.getElementById("focus-clock"),
+  range: document.getElementById("focus-range"),
+  note:  document.getElementById("focus-note")
+});
+
+const breakTimer = createTimer({
+  face:  document.getElementById("break-face"),
+  meter: document.getElementById("break-meter"),
+  clock: document.getElementById("break-clock"),
+  range: document.getElementById("break-range"),
+  note:  document.getElementById("break-note")
+});
+
+const soloTimer = createTimer({
+  face:  document.getElementById("solo-face"),
+  meter: document.getElementById("solo-meter"),
+  clock: document.getElementById("solo-clock"),
+  range: document.getElementById("solo-range"),
+  note:  document.getElementById("solo-note")
+});
+
+/* ── 3h. ENERGY PATHS ───────────────────────────── */
+function chooseEnergy(level){
+  if(level === "low"){ goTo("screen-ground"); }
+  else if(level === "mid"){ goTo("screen-steady"); }
+  else{ goTo("screen-ignite"); }
+}
+
+function restIsTheTask(){
+  const now = new Date();
+  addWin("Rested on purpose", now, now);
+  document.getElementById("rest-sub").textContent =
+    "Logged as today's win. Close this tab — it'll be here when you're back.";
+  goTo("screen-rest");
+}
+
+/* ── 3i. THE RUN BUILDER ────────────────────────── */
+
+/* the opening-moment buttons land here: if the List has
+   anything, offer it first; otherwise straight to building */
+function goBuilder(mode){
+  if(!offerPull(mode)){ openBuilder(mode); }
+}
+
+function openBuilder(mode){
+  draft = { mode: mode, tasks: [] };
+  const mid = (mode === "mid");
+  document.getElementById("build-eyebrow").textContent =
+    mid ? "Build your run · middle energy" : "Build your run · charged up";
+  document.getElementById("build-title").textContent =
+    mid ? "Pick two or three." : "Line them up.";
+  document.getElementById("build-sub").textContent =
+    mid ? "Small batch, generous breaks. Five minutes between tasks."
+        : "Aim for five or more. Tight 2½-minute breaks, water in between.";
+  renderDraft();
+  goTo("screen-build");
+}
+
+function addDraftTask(labelFromChip){
+  if(!draft) return;
+  const cap = SETTINGS.runShape[draft.mode].cap;
+  if(draft.tasks.length >= cap){
+    document.getElementById("build-note").textContent =
+      "Three is the lid at this energy. Remove one to swap.";
+    return;
+  }
+  const input = document.getElementById("build-input");
+  const label = (labelFromChip || input.value).trim();
+  if(!label){
+    input.placeholder = "Name one thing, then + Add →";
+    input.focus();
+    return;
+  }
+  draft.tasks.push({ label: label, minutes: draftMinutes });
+  input.value = "";
+  renderDraft();
+}
+
+function removeDraftTask(idx){
+  draft.tasks.splice(idx, 1);
+  renderDraft();
+}
+
+function cycleDraftDuration(idx){
+  const opts = SETTINGS.timerMinutes;
+  const cur = opts.indexOf(draft.tasks[idx].minutes);
+  draft.tasks[idx].minutes = opts[(cur + 1) % opts.length];
+  renderDraft();
+}
+
+function renderDraft(){
+  const box = document.getElementById("build-list");
+  box.innerHTML = "";
+  draft.tasks.forEach((t, i) => {
+    const row = document.createElement("div");
+    row.className = "build-row";
+
+    const label = document.createElement("span");
+    label.className = "grow";
+    label.textContent = (i + 1) + ". " + t.label;
+
+    const dur = document.createElement("button");
+    dur.type = "button";
+    dur.textContent = t.minutes + " min";
+    dur.onclick = () => cycleDraftDuration(i);
+
+    const x = document.createElement("button");
+    x.type = "button";
+    x.textContent = "✕";
+    x.setAttribute("aria-label", "Remove " + t.label);
+    x.onclick = () => removeDraftTask(i);
+
+    row.appendChild(label); row.appendChild(dur); row.appendChild(x);
+    box.appendChild(row);
+  });
+
+  const n = draft.tasks.length;
+  const shape = SETTINGS.runShape[draft.mode];
+  const note = document.getElementById("build-note");
+  if(n === 0){ note.textContent = shape.hint; }
+  else if(draft.mode === "mid"){ note.textContent = n + " of 3 · " + shape.hint; }
+  else{ note.textContent = n + " lined up · " + shape.hint; }
+
+  document.getElementById("build-start").textContent =
+    n > 0 ? "Start the run (" + n + ")" : "Start the run";
+}
+
+/* ── 3j. RUNNING A RUN ──────────────────────────── */
+function startRun(){
+  if(!draft || draft.tasks.length === 0){
+    document.getElementById("build-note").textContent =
+      "The run needs at least one thing in it.";
+    return;
+  }
+  beginSession(draft.mode, draft.tasks, SETTINGS.breaks[draft.mode]);
+  draft = null;
+}
+
+/* one front door for runs AND routines */
+function beginSession(mode, tasks, breakMin){
+  session = {
+    mode: mode,
+    tasks: tasks.map(t => ({
+      label: t.label, minutes: t.minutes,
+      status: "todo", start: null, end: null
+    })),
+    i: 0,
+    breakMin: breakMin,
+    breaksTaken: 0,
+    pendingNext: null,
+    hit13: false
+  };
+  runTask(0);
+}
+
+function setFocusButtons(inRun){
+  document.getElementById("focus-swap").style.display   = inRun ? "none"  : "block";
+  document.getElementById("focus-park").style.display   = inRun ? "none"  : "block";
+  document.getElementById("focus-skip").style.display   = inRun ? "block" : "none";
+  document.getElementById("focus-endrun").style.display = inRun ? "block" : "none";
+  document.getElementById("focus-upnext").style.display = inRun ? "block" : "none";
+}
+
+function runTask(i){
+  exitPausedUI();
+  const t = session.tasks[i];
+  session.i = i;
+  currentTask = t.label;
+  taskStartedAt = new Date();
+  t.start = taskStartedAt;
+
+  document.getElementById("focus-eyebrow").textContent =
+    "Task " + (i + 1) + " of " + session.tasks.length;
+  document.getElementById("task-display").textContent = t.label;
+
+  const lines = SETTINGS.encouragements;
+  document.getElementById("encourage-line").textContent =
+    lines[Math.floor(Math.random() * lines.length)];
+
+  const next = session.tasks[i + 1];
+  document.getElementById("focus-upnext").textContent =
+    next ? "Up next: " + next.label : "Last one of the run.";
+
+  document.getElementById("focus-timer").style.display = "block";
+  document.getElementById("focus-plus5").style.display = "block";
+  document.getElementById("focus-adjust").style.display = "flex";
+  focusTimer.start(t.minutes, () => {
+    document.getElementById("encourage-line").textContent =
+      "Time. However far you got still counts.";
+  });
+
+  setFocusButtons(true);
+  goTo("screen-focus");
+}
+
+function advanceRun(completed){
+  exitPausedUI();
+  const t = session.tasks[session.i];
+  t.end = new Date();
+
+  let spareMs = 0;
+  if(focusTimer.isRunning()){ spareMs = focusTimer.remainingMs(); }
+  focusTimer.reset();
+
+  if(completed){
+    t.status = "done";
+    addWin(t.label, t.start, t.end);
+    sound.ready(); sound.play("win");
+    if(store.get(todayKey(), []).length === 13){ session.hit13 = true; }
+  }else{
+    t.status = "parked";
+  }
+
+  const nextIdx = session.i + 1;
+  if(nextIdx < session.tasks.length){
+    /* zero-break routines flow straight through;
+       skipped tasks never earn a break either */
+    if(completed && session.breakMin > 0){ enterBreak(nextIdx, spareMs, t.label); }
+    else{ runTask(nextIdx); }
+  }else{
+    showSummary();
+  }
+}
+
+function skipTask(){ advanceRun(false); }
+
+function enterBreak(nextIdx, spareMs, doneLabel){
+  session.pendingNext = nextIdx;
+  session.breaksTaken++;
+
+  document.getElementById("break-flash").textContent =
+    (spareMs > 1000)
+      ? "✓ " + doneLabel + " — beat the clock, " + fmtClock(spareMs) + " to spare"
+      : "✓ " + doneLabel;
+
+  const care = SETTINGS.carePrompts;
+  document.getElementById("care-line").textContent =
+    care[(session.breaksTaken - 1) % care.length];
+
+  const next = session.tasks[nextIdx];
+  document.getElementById("break-upnext").textContent =
+    "Up next: " + next.label + " · " + next.minutes + " min";
+
+  breakTimer.start(session.breakMin, null, true);
+  goTo("screen-break");
+}
+
+function startNextFromBreak(){
+  breakTimer.reset();
+  runTask(session.pendingNext);
+}
+
+function endRun(){
+  if(session && document.getElementById("screen-focus").classList.contains("active")){
+    const t = session.tasks[session.i];
+    if(t.status === "todo"){ t.status = "parked"; t.end = new Date(); }
+  }
+  exitPausedUI();
+  focusTimer.reset();
+  breakTimer.reset();
+  showSummary();
+}
+
+function showSummary(){
+  const done = session.tasks.filter(t => t.status === "done");
+  const parked = session.tasks.filter(t => t.status !== "done");
+
+  let focusedMs = 0;
+  done.forEach(t => { focusedMs += (t.end - t.start); });
+  const mins = Math.max(1, Math.round(focusedMs / 60000));
+
+  document.getElementById("sum-headline").textContent =
+    session.hit13 ? "Thirteen today. 👑"
+    : (parked.length === 0 && done.length > 0) ? "Clean sweep."
+    : "That was a run.";
+
+  document.getElementById("sum-sub").textContent =
+    done.length + " of " + session.tasks.length + " done · about "
+    + mins + (mins === 1 ? " minute" : " minutes") + " focused.";
+
+  const list = document.getElementById("sum-list");
+  list.innerHTML = "";
+  done.forEach(t => {
+    const li = document.createElement("li");
+    li.textContent = t.label;
+    const span = document.createElement("span");
+    span.className = "when";
+    span.textContent = clockTime(t.start) + " – " + clockTime(t.end);
+    li.appendChild(span);
+    list.appendChild(li);
+  });
+
+  document.getElementById("sum-parked").textContent =
+    parked.length
+      ? "Parked for later: " + parked.map(t => t.label).join(", ") + ". They'll keep."
+      : "";
+
+  session = null;
+  goTo("screen-summary");
+}
+
+function backToStart(){
+  session = null;
+  exitPausedUI();
+  setFocusButtons(false);
+  document.getElementById("focus-eyebrow").textContent = "Right now";
+  goTo("screen-welcome");
+}
+
+function finishToRest(){
+  exitPausedUI();
+  setFocusButtons(false);
+  document.getElementById("focus-eyebrow").textContent = "Right now";
+  document.getElementById("rest-sub").textContent =
+    "Close this tab. It'll be here when you're back.";
+  goTo("screen-rest");
+}
+
+/* ── 3k. PULLED AWAY — a pause for real life ────
+   Kids happen. Phones ring. The timer freezes
+   where it stands, and "I'm back" picks it up
+   exactly there. No guilt, no dead clock. */
+let pausedMode = false;
+let stashedEncourage = "";
+
+function pulledAway(){
+  if(pausedMode) return;
+  pausedMode = true;
+  if(focusTimer.isRunning() && !focusTimer.isPaused()){ focusTimer.pause(); }
+  stashedEncourage = document.getElementById("encourage-line").textContent;
+  document.getElementById("encourage-line").textContent =
+    "Paused. Life happens — it'll hold right here.";
+  document.getElementById("focus-pause").style.display = "none";
+  document.getElementById("focus-resume").style.display = "block";
+  document.getElementById("focus-adjust").style.display = "none";
+  document.getElementById("focus-plus5").style.display = "none";
+}
+
+function resumeTask(){
+  if(!pausedMode) return;
+  pausedMode = false;
+  if(focusTimer.isPaused()){ focusTimer.resume(); }
+  document.getElementById("encourage-line").textContent =
+    stashedEncourage || "Welcome back. Picking up right where you left off.";
+  document.getElementById("focus-resume").style.display = "none";
+  document.getElementById("focus-pause").style.display = "block";
+  if(focusTimer.isRunning()){
+    document.getElementById("focus-adjust").style.display = "flex";
+    document.getElementById("focus-plus5").style.display = "block";
+  }
+}
+
+/* quietly clears the paused UI when a task ends any other way */
+function exitPausedUI(){
+  pausedMode = false;
+  document.getElementById("focus-resume").style.display = "none";
+  document.getElementById("focus-pause").style.display = "block";
+}
+
+/* ── 3l. THE SINGLE-TASK FLOW (low energy path) ── */
+function lockItIn(){
+  const input = document.getElementById("task-input");
+  const task = input.value.trim();
+
+  if(!task){
+    input.placeholder = "Even “drink water” counts. One thing →";
+    input.focus();
+    return;
+  }
+
+  exitPausedUI();
+  currentTask = task;
+  taskStartedAt = new Date();
+  document.getElementById("task-display").textContent = task;
+  document.getElementById("focus-eyebrow").textContent = "Right now";
+  setFocusButtons(false);
+
+  const lines = SETTINGS.encouragements;
+  document.getElementById("encourage-line").textContent =
+    lines[Math.floor(Math.random() * lines.length)];
+
+  const ringBlock = document.getElementById("focus-timer");
+  const plus5 = document.getElementById("focus-plus5");
+  const adjustRow = document.getElementById("focus-adjust");
+  if(chosenMinutes > 0){
+    ringBlock.style.display = "block";
+    plus5.style.display = "block";
+    adjustRow.style.display = "flex";
+    focusTimer.start(chosenMinutes, () => {
+      document.getElementById("encourage-line").textContent =
+        "Time. However far you got still counts.";
+    });
+  }else{
+    ringBlock.style.display = "none";
+    plus5.style.display = "none";
+    adjustRow.style.display = "none";
+    document.getElementById("focus-range").innerHTML =
+      "Started at <strong>" + clockTime(taskStartedAt) + "</strong>";
+    document.getElementById("focus-note").textContent = "";
+  }
+
+  goTo("screen-focus");
+}
+
+function done(){
+  if(session){ advanceRun(true); return; }
+
+  exitPausedUI();
+  const endedAt = new Date();
+  let spareMs = 0;
+  if(focusTimer.isRunning()){ spareMs = focusTimer.remainingMs(); }
+  focusTimer.reset();
+
+  addWin(currentTask, taskStartedAt, endedAt);
+  sound.ready(); sound.play("win");
+
+  const wins = store.get(todayKey(), []);
+  const n = wins.length;
+
+  document.getElementById("done-headline").textContent =
+    (n === 13) ? "Thirteen. Your number. 👑"
+    : (spareMs > 1000) ? "Beat the clock. ⚡"
+    : "That counts.";
+
+  let sub = (n === 1)
+    ? "First win of the day is the heaviest one. It's down."
+    : n + " wins today.";
+  if(spareMs > 1000){ sub = fmtClock(spareMs) + " to spare. " + sub; }
+  document.getElementById("done-sub").textContent = sub;
+
+  renderWinList(document.getElementById("win-list"));
+  document.getElementById("task-input").value = "";
+  currentTask = ""; taskStartedAt = null;
+  goTo("screen-done");
+}
+
+function swapIt(){
+  exitPausedUI();
+  focusTimer.reset();
+  goTo("screen-task");
+}
+
+function parkIt(){
+  exitPausedUI();
+  focusTimer.reset();
+  document.getElementById("task-input").value = currentTask;
+  currentTask = ""; taskStartedAt = null;
+  goTo("screen-welcome");
+}
+
+/* ── 3m. ROUTINES — plans that keep ─────────────── */
+let routines = [];
+let editingRoutine = null;
+let pendingDeleteId = null;
+
+function openRoutinesTab(){
+  routines = store.get("routines", []);
+  document.getElementById("rt-editor").style.display = "none";
+  document.getElementById("rt-list-wrap").style.display = "block";
+  pendingDeleteId = null;
+  renderRoutineList();
+}
+
+function renderRoutineList(){
+  const box = document.getElementById("rt-list");
+  box.innerHTML = "";
+  routines.forEach(rt => {
+    const row = document.createElement("div");
+    row.className = "build-row";
+
+    const label = document.createElement("span");
+    label.className = "grow";
+    const total = rt.steps.reduce((a, s) => a + s.minutes, 0);
+    label.textContent = rt.name + " · " + rt.steps.length +
+      (rt.steps.length === 1 ? " step · " : " steps · ") + total + " min";
+
+    const go = document.createElement("button");
+    go.type = "button"; go.textContent = "▶";
+    go.setAttribute("aria-label", "Start " + rt.name);
+    go.onclick = () => launchRoutine(rt.id);
+
+    const ed = document.createElement("button");
+    ed.type = "button"; ed.textContent = "✎";
+    ed.setAttribute("aria-label", "Edit " + rt.name);
+    ed.onclick = () => editRoutine(rt.id);
+
+    const x = document.createElement("button");
+    x.type = "button";
+    x.textContent = (pendingDeleteId === rt.id) ? "Sure?" : "✕";
+    x.setAttribute("aria-label", "Delete " + rt.name);
+    x.onclick = () => {
+      if(pendingDeleteId === rt.id){
+        routines = routines.filter(r => r.id !== rt.id);
+        store.set("routines", routines);
+        pendingDeleteId = null;
+      }else{
+        pendingDeleteId = rt.id;   /* second tap confirms */
+      }
+      renderRoutineList();
+    };
+
+    row.appendChild(label); row.appendChild(go);
+    row.appendChild(ed); row.appendChild(x);
+    box.appendChild(row);
+  });
+
+  document.getElementById("rt-list-note").textContent =
+    routines.length ? "Tap ▶ to launch, ✎ to edit, ✕ twice to delete."
+                    : "Nothing here yet. Build your first one — breakfast counts.";
+}
+
+function newRoutine(){
+  editingRoutine = { id: Date.now(), name: "", breakMin: 5, steps: [] };
+  document.getElementById("rt-ed-eyebrow").textContent = "New routine";
+  document.getElementById("rt-name").value = "";
+  document.getElementById("rt-break").value = 5;
+  document.getElementById("rt-note").textContent = "";
+  renderRoutineSteps();
+  document.getElementById("rt-list-wrap").style.display = "none";
+  document.getElementById("rt-editor").style.display = "block";
+}
+
+function editRoutine(id){
+  const rt = routines.find(r => r.id === id);
+  if(!rt) return;
+  editingRoutine = { id: rt.id, name: rt.name, breakMin: rt.breakMin,
+                     steps: rt.steps.map(s => ({ label: s.label, minutes: s.minutes })) };
+  document.getElementById("rt-ed-eyebrow").textContent = "Editing · " + rt.name;
+  document.getElementById("rt-name").value = rt.name;
+  document.getElementById("rt-break").value = rt.breakMin;
+  document.getElementById("rt-note").textContent = "";
+  renderRoutineSteps();
+  document.getElementById("rt-list-wrap").style.display = "none";
+  document.getElementById("rt-editor").style.display = "block";
+}
+
+function clampMinutes(v, lo, hi, fallback){
+  const n = parseFloat(v);
+  if(isNaN(n)) return fallback;
+  return Math.min(hi, Math.max(lo, n));
+}
+
+function addRoutineStep(){
+  const input = document.getElementById("rt-step-input");
+  const label = input.value.trim();
+  if(!label){
+    input.placeholder = "Name the step, then ＋ Add →";
+    input.focus();
+    return;
+  }
+  const mins = Math.round(clampMinutes(
+    document.getElementById("rt-step-min").value, 1, 120, 5));
+  editingRoutine.steps.push({ label: label, minutes: mins });
+  input.value = "";
+  renderRoutineSteps();
+}
+
+function removeRoutineStep(idx){
+  editingRoutine.steps.splice(idx, 1);
+  renderRoutineSteps();
+}
+
+/* drag state for reordering steps */
+let dragRow = null;
+
+function handleDragMove(e){
+  if(!dragRow) return;
+  const box = document.getElementById("rt-steps");
+  const rows = Array.from(box.querySelectorAll(".build-row")).filter(r => r !== dragRow);
+  let placed = false;
+  for(const r of rows){
+    const rect = r.getBoundingClientRect();
+    if(e.clientY < rect.top + rect.height / 2){
+      box.insertBefore(dragRow, r);
+      placed = true;
+      break;
+    }
+  }
+  if(!placed){ box.appendChild(dragRow); }
+}
+
+function handleDragEnd(){
+  if(!dragRow) return;
+  dragRow.classList.remove("dragging");
+  /* the DOM order is now the truth — commit it to the data */
+  const box = document.getElementById("rt-steps");
+  const order = Array.from(box.querySelectorAll(".build-row"))
+    .map(r => parseInt(r.dataset.i, 10));
+  editingRoutine.steps = order.map(i => editingRoutine.steps[i]);
+  dragRow = null;
+  renderRoutineSteps();   /* renumber cleanly */
+}
+
+/* tap a step's name → it becomes an input, right there */
+function startRenameStep(i, labelSpan){
+  const s = editingRoutine.steps[i];
+  const input = document.createElement("input");
+  input.type = "text";
+  input.value = s.label;
+  input.setAttribute("aria-label", "Rename step");
+  const commit = () => {
+    const v = input.value.trim();
+    if(v){ s.label = v; }
+    renderRoutineSteps();
+  };
+  input.addEventListener("blur", commit);
+  input.addEventListener("keydown", (e) => {
+    if(e.key === "Enter"){ input.blur(); }
+  });
+  labelSpan.textContent = "";
+  labelSpan.appendChild(input);
+  input.focus();
+  input.select();
+}
+
+function renderRoutineSteps(){
+  const box = document.getElementById("rt-steps");
+  box.innerHTML = "";
+  editingRoutine.steps.forEach((s, i) => {
+    const row = document.createElement("div");
+    row.className = "build-row";
+    row.dataset.i = i;
+
+    /* ≡ grab here to reorder */
+    const grip = document.createElement("button");
+    grip.type = "button";
+    grip.className = "drag-handle";
+    grip.textContent = "≡";
+    grip.setAttribute("aria-label", "Drag to reorder " + s.label);
+    grip.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      dragRow = row;
+      row.classList.add("dragging");
+      try{ grip.setPointerCapture(e.pointerId); }catch(err){}
+    });
+    grip.addEventListener("pointermove", handleDragMove);
+    grip.addEventListener("pointerup", handleDragEnd);
+    grip.addEventListener("pointercancel", handleDragEnd);
+
+    /* tap the name to rename it in place */
+    const label = document.createElement("span");
+    label.className = "grow";
+    label.textContent = (i + 1) + ". " + s.label;
+    label.onclick = () => startRenameStep(i, label);
+
+    /* minutes are a live number input — any value, 1 to 120.
+       Your 3-minute shake fits exactly here. */
+    const min = document.createElement("input");
+    min.type = "number"; min.min = 1; min.max = 120; min.step = 1;
+    min.value = s.minutes;
+    min.setAttribute("aria-label", "Minutes for " + s.label);
+    min.onchange = () => {
+      s.minutes = Math.round(clampMinutes(min.value, 1, 120, s.minutes));
+      min.value = s.minutes;
+    };
+
+    const x = document.createElement("button");
+    x.type = "button"; x.textContent = "✕";
+    x.setAttribute("aria-label", "Remove " + s.label);
+    x.onclick = () => removeRoutineStep(i);
+
+    row.appendChild(grip); row.appendChild(label);
+    row.appendChild(min); row.appendChild(x);
+    box.appendChild(row);
+  });
+}
+
+function saveRoutine(){
+  const name = document.getElementById("rt-name").value.trim();
+  if(!name){
+    document.getElementById("rt-note").textContent = "Give it a name first.";
+    return;
+  }
+  if(editingRoutine.steps.length === 0){
+    document.getElementById("rt-note").textContent = "It needs at least one step.";
+    return;
+  }
+  editingRoutine.name = name;
+  editingRoutine.breakMin = clampMinutes(
+    document.getElementById("rt-break").value, 0, 30, 5);
+
+  const idx = routines.findIndex(r => r.id === editingRoutine.id);
+  if(idx >= 0){ routines[idx] = editingRoutine; }
+  else{ routines.push(editingRoutine); }
+  store.set("routines", routines);
+
+  editingRoutine = null;
+  openRoutinesTab();
+}
+
+function cancelRoutineEdit(){
+  editingRoutine = null;
+  openRoutinesTab();
+}
+
+function launchRoutine(id){
+  const rt = routines.find(r => r.id === id);
+  if(!rt || rt.steps.length === 0) return;
+  switchTab("now");
+  beginSession("routine", rt.steps, rt.breakMin);
+}
+
+/* ── 3n. THE LIST — a holding pen for errands ───
+   Items land here unsorted, show their age, and
+   leave when pulled into a run. Stored as
+   { id, label, added } objects. */
+
+function loadList(){ return store.get("list", []); }
+function saveList(arr){ store.set("list", arr); refreshListUI(); }
+
+/* split a typed line OR a pasted block into clean items.
+   Handles line breaks AND commas; trims filler whitespace;
+   drops empties. A pasted block of five lines = five items. */
+function parseListInput(raw){
+  return raw
+    .split(/[\n,]+/)
+    .map(s => s.trim())
+    .filter(s => s.length > 0);
+}
+
+function addListItems(){
+  const input = document.getElementById("list-input");
+  const items = parseListInput(input.value);
+  if(items.length === 0){
+    document.getElementById("list-add-note").textContent =
+      "Type something — or paste a list — then ＋ Add.";
+    input.focus();
+    return;
+  }
+  const list = loadList();
+  const now = Date.now();
+  items.forEach(label => {
+    list.push({ id: now + "-" + Math.random().toString(36).slice(2, 7),
+                label: label, added: now });
+  });
+  input.value = "";
+  document.getElementById("list-add-note").textContent =
+    items.length === 1 ? "Added. Drop in the next one." : ("Added " + items.length + " items.");
+  saveList(list);
+}
+
+function removeListItem(id){
+  saveList(loadList().filter(it => it.id !== id));
+}
+
+function clearListAll(){
+  saveList([]);
+  document.getElementById("list-add-note").textContent = "List cleared.";
+}
+
+function clearListAged(){
+  const cutoff = Date.now() - SETTINGS.listAgeDays * 86400000;
+  const before = loadList().length;
+  const kept = loadList().filter(it => it.added > cutoff);
+  saveList(kept);
+  document.getElementById("list-add-note").textContent =
+    (before - kept.length) ? ("Cleared " + (before - kept.length) + " that had waited longest.")
+                           : "Nothing was past your limit yet.";
+}
+
+/* how many days an item has waited (whole days) */
+function ageDays(item){
+  return Math.floor((Date.now() - item.added) / 86400000);
+}
+function isAged(item){
+  return (Date.now() - item.added) >= SETTINGS.listAgeDays * 86400000;
+}
+function agedCount(){ return loadList().filter(isAged).length; }
+
+function ageLabel(item){
+  const d = ageDays(item);
+  if(d <= 0) return "today";
+  if(d === 1) return "1d";
+  return d + "d";
+}
+
+/* the List tab itself */
+function openListTab(){
+  refreshListUI();
+}
+
+/* tap a List item's name → it becomes an input, right there.
+   Same gesture as renaming a routine step. */
+function startRenameListItem(id, labelSpan){
+  const list = loadList();
+  const item = list.find(it => it.id === id);
+  if(!item) return;
+  const input = document.createElement("input");
+  input.type = "text";
+  input.value = item.label;
+  input.setAttribute("aria-label", "Rename item");
+  input.style.margin = "0";
+  input.style.padding = ".35rem .6rem";
+  input.style.fontSize = "1rem";
+  input.style.borderRadius = "10px";
+  let committed = false;
+  const commit = () => {
+    if(committed) return;     /* blur + Enter can both fire — guard it */
+    committed = true;
+    const v = input.value.trim();
+    if(v){
+      const fresh = loadList();
+      const target = fresh.find(it => it.id === id);
+      if(target){ target.label = v; store.set("list", fresh); }
+    }
+    refreshListUI();
+  };
+  input.addEventListener("blur", commit);
+  input.addEventListener("keydown", (e) => {
+    if(e.key === "Enter"){ e.preventDefault(); input.blur(); }
+    else if(e.key === "Escape"){ committed = true; refreshListUI(); }
+  });
+  labelSpan.textContent = "";
+  labelSpan.appendChild(input);
+  input.focus();
+  input.select();
+}
+
+function renderListItems(){
+  const box = document.getElementById("list-items");
+  const list = loadList();
+  box.innerHTML = "";
+
+  if(list.length === 0){
+    const empty = document.createElement("p");
+    empty.className = "build-note";
+    empty.textContent = "Nothing here yet. Dump in whatever's rattling around — it'll keep.";
+    box.appendChild(empty);
+    document.getElementById("list-actions").style.display = "none";
+    return;
+  }
+
+  /* oldest first — the things waiting longest sit on top */
+  list.slice().sort((a, b) => a.added - b.added).forEach(item => {
+    const row = document.createElement("div");
+    row.className = "build-row";
+    if(isAged(item)){ row.style.borderLeftColor = "var(--clay)"; }
+
+    const label = document.createElement("span");
+    label.className = "grow";
+    label.textContent = item.label;
+    label.style.cursor = "text";
+    label.title = "Tap to rename";
+    label.onclick = () => startRenameListItem(item.id, label);
+
+    const age = document.createElement("button");
+    age.type = "button";
+    age.textContent = (isAged(item) ? "⚠ " : "") + ageLabel(item);
+    age.style.pointerEvents = "none";
+    age.style.color = isAged(item) ? "var(--clay)" : "var(--faded)";
+    age.style.borderColor = "transparent";
+
+    const x = document.createElement("button");
+    x.type = "button"; x.textContent = "✕";
+    x.setAttribute("aria-label", "Remove " + item.label);
+    x.onclick = () => removeListItem(item.id);
+
+    row.appendChild(label); row.appendChild(age); row.appendChild(x);
+    box.appendChild(row);
+  });
+
+  document.getElementById("list-actions").style.display = "block";
+}
+
+/* badge on the tab + banner on the Now screen — both, loud */
+function refreshListUI(){
+  const list = loadList();
+  const n = list.length;
+  const aged = agedCount();
+
+  const badge = document.getElementById("list-badge");
+  if(n > 0){
+    badge.style.display = "block";
+    badge.textContent = n > 99 ? "99+" : String(n);
+    badge.classList.toggle("overdue", aged > 0);
+  }else{
+    badge.style.display = "none";
+  }
+
+  const banner = document.getElementById("welcome-list-banner");
+  if(n > 0){
+    banner.style.display = "block";
+    banner.classList.toggle("overdue", aged > 0);
+    const head = aged > 0
+      ? ("⚠ " + n + (n === 1 ? " thing" : " things") + " on your List")
+      : (n + (n === 1 ? " thing" : " things") + " on your List");
+    const sub = aged > 0
+      ? (aged + (aged === 1 ? " has" : " have") + " been waiting a while — tap to tackle them")
+      : "Tap to see them, or pull into a charged-up run";
+    banner.innerHTML = head + "<span class='b-sub'>" + sub + "</span>";
+  }else{
+    banner.style.display = "none";
+  }
+
+  /* keep the visible List rows fresh too */
+  if(document.getElementById("view-list").classList.contains("active")){
+    renderListItems();
+  }
+}
+
+/* ── THE PULL HANDSHAKE ─────────────────────────
+   Tapping an energy with items on the List offers
+   them first. Picked items MOVE off the List into
+   the run; the rest stay. */
+let pullMode = null;        // the builder mode we're heading into
+let pullSelected = new Set();
+
+function offerPull(mode){
+  if(loadList().length === 0){ return false; }   // nothing to offer
+
+  /* respect the user's scope: off everywhere, high only, or both */
+  const scope = SETTINGS.listPullScope;
+  if(scope === "off"){ return false; }
+  if(scope === "high" && mode !== "charge"){ return false; }
+
+  pullMode = mode;
+  pullSelected = new Set();
+  document.getElementById("pull-eyebrow").textContent =
+    "From your List · " + (mode === "charge" ? "charged up" : "middle energy");
+  renderPullList();
+  goTo("screen-pull");
+  return true;
+}
+
+function renderPullList(){
+  const box = document.getElementById("pull-list");
+  box.innerHTML = "";
+  loadList().slice().sort((a, b) => a.added - b.added).forEach(item => {
+    const row = document.createElement("div");
+    row.className = "build-row";
+    if(isAged(item)){ row.style.borderLeftColor = "var(--clay)"; }
+
+    const label = document.createElement("span");
+    label.className = "grow";
+    label.textContent = (isAged(item) ? "⚠ " : "") + item.label +
+      "  ·  " + ageLabel(item);
+
+    const pick = document.createElement("button");
+    pick.type = "button";
+    const on = pullSelected.has(item.id);
+    pick.textContent = on ? "✓ Picked" : "Pull in";
+    if(on){ pick.classList.add("selected"); }
+    pick.onclick = () => {
+      if(pullSelected.has(item.id)){ pullSelected.delete(item.id); }
+      else{ pullSelected.add(item.id); }
+      renderPullList();
+    };
+
+    row.appendChild(label); row.appendChild(pick);
+    box.appendChild(row);
+  });
+
+  document.getElementById("pull-sub").textContent =
+    pullSelected.size
+      ? (pullSelected.size + " picked — they'll become tasks you can time and order.")
+      : "Tap any to pull them into this run. The rest stay on your List.";
+}
+
+function confirmPull(){
+  const mode = pullMode;
+  const picked = loadList().filter(it => pullSelected.has(it.id));
+
+  /* picked items LEAVE the List — moved, not copied */
+  if(picked.length){
+    saveList(loadList().filter(it => !pullSelected.has(it.id)));
+  }
+
+  openBuilder(mode);
+  /* drop the picked items straight into the fresh builder */
+  picked.forEach(it => {
+    draft.tasks.push({ label: it.label, minutes: draftMinutes });
+  });
+  renderDraft();
+}
+
+function skipPull(){
+  openBuilder(pullMode);
+}
+
+/* ── 3o. WINS ───────────────────────────────────── */
+function addWin(label, startDate, endDate){
+  const key = todayKey();
+  const wins = store.get(key, []);
+  wins.push({
+    label: label,
+    start: clockTime(startDate),
+    end:   clockTime(endDate)
+  });
+  store.set(key, wins);
+}
+
+function renderWinList(listEl){
+  const wins = store.get(todayKey(), []);
+  listEl.innerHTML = "";
+  wins.forEach(w => {
+    const li = document.createElement("li");
+    const when = w.start
+      ? (w.start === w.end ? w.start : w.start + " – " + w.end)
+      : (w.at || "");
+    li.textContent = w.label;
+    const span = document.createElement("span");
+    span.className = "when";
+    span.textContent = when;
+    li.appendChild(span);
+    listEl.appendChild(li);
+  });
+}
+
+function renderWinsTab(){
+  const todayWins = store.get(todayKey(), []);
+  document.getElementById("wins-sub").textContent =
+    (todayWins.length === 0)
+      ? "Nothing yet — and the day isn't over."
+      : todayWins.length + (todayWins.length === 1 ? " win so far." : " wins so far.");
+  renderWinList(document.getElementById("wins-today"));
+
+  const past = store.keys("wins-")
+    .filter(k => k !== todayKey())
+    .map(k => {
+      const p = k.replace("wins-","").split("-").map(Number);
+      return { key: k, date: new Date(p[0], p[1]-1, p[2]) };
+    })
+    .sort((a, b) => b.date - a.date);
+
+  const box = document.getElementById("wins-past");
+  const label = document.getElementById("past-label");
+  box.innerHTML = "";
+  label.style.display = past.length ? "block" : "none";
+
+  past.forEach(day => {
+    const wins = store.get(day.key, []);
+    const row = document.createElement("div");
+    row.className = "past-day";
+    const name = document.createElement("b");
+    name.textContent = day.date.toLocaleDateString([],
+      { weekday:"short", month:"short", day:"numeric" });
+    const count = document.createElement("span");
+    count.textContent = wins.length + (wins.length === 1 ? " win" : " wins");
+    row.appendChild(name); row.appendChild(count);
+    box.appendChild(row);
+  });
+}
+
+/* ── 3o. THE STANDALONE TIMER TAB ───────────────
+   Work, then rest, on the same ring. The rest is
+   tiered to the work (🔧 timerRestTiers), runs in
+   sage, can be skipped, stretched, or shrunk, and
+   can be turned off entirely in ⚙️ You. */
+let soloMinutes = 10;   // 🔧 default window on the Timer tab
+let soloPhase = "work";
+
+function soloStart(){
+  if(soloPhase === "rest") return;   /* already resting; use Skip/Reset */
+  soloTimer.start(soloMinutes, () => {
+    if(SETTINGS.timerRestOn){ beginSoloRest(); }
+    else{
+      document.getElementById("solo-start").textContent = "Time. Start another?";
+      soloButtons(false);
+    }
+  });
+  document.getElementById("solo-start").textContent = "Running…";
+  soloButtons(true);
+}
+
+function beginSoloRest(){
+  soloPhase = "rest";
+  const restMin = restFor(soloMinutes);
+  document.getElementById("solo-face").classList.add("resting");
+  soloTimer.start(restMin, () => { endSoloRest("Rested. Start another?"); }, true);
+  document.getElementById("solo-note").textContent =
+    "Rest — " + fmtClock(restMin * 60 * 1000) + ". You earned the sage.";
+  document.getElementById("solo-start").textContent = "Resting…";
+  document.getElementById("solo-skiprest").style.display = "block";
+}
+
+function endSoloRest(label){
+  soloPhase = "work";
+  document.getElementById("solo-face").classList.remove("resting");
+  document.getElementById("solo-skiprest").style.display = "none";
+  document.getElementById("solo-start").textContent = label || "Start another?";
+  soloButtons(false);
+}
+
+function skipSoloRest(){
+  soloTimer.reset();
+  endSoloRest("Start another?");
+  document.getElementById("solo-note").textContent = "Rest skipped — fair.";
+}
+
+function soloPauseResume(){
+  const btn = document.getElementById("solo-pause");
+  if(soloTimer.isPaused()){ soloTimer.resume(); btn.textContent = "Pause"; }
+  else{ soloTimer.pause(); btn.textContent = "Resume"; }
+}
+
+function soloReset(){
+  soloTimer.reset();
+  soloPhase = "work";
+  document.getElementById("solo-face").classList.remove("resting");
+  document.getElementById("solo-skiprest").style.display = "none";
+  document.getElementById("solo-start").textContent = "Start";
+  document.getElementById("solo-pause").textContent = "Pause";
+  soloButtons(false);
+}
+
+function soloButtons(running){
+  document.getElementById("solo-pause").style.display = running ? "block" : "none";
+  document.getElementById("solo-reset").style.display = running ? "block" : "none";
+}
+
+/* ── 3p. THE YOU TAB — settings, saved per device ─ */
+let settingsTasks = [];
+let settingsChannels = {};
+let settingsFlash = true;
+let settingsWake = true;
+let settingsRest = true;
+let settingsPullScope = "both";
+
+function openSettings(){
+  document.getElementById("set-name").value = SETTINGS.name;
+  SETTINGS.affirmations.forEach((line, i) => {
+    document.getElementById("set-aff-" + (i + 1)).value = line;
+  });
+  settingsTasks = SETTINGS.quickPicks.slice();
+  settingsChannels = Object.assign({}, SETTINGS.nudgeChannel);
+  settingsFlash = SETTINGS.flashOn;
+  settingsWake = SETTINGS.wakeLockOn;
+  settingsRest = SETTINGS.timerRestOn;
+  settingsPullScope = SETTINGS.listPullScope;
+  document.getElementById("set-listage").value = SETTINGS.listAgeDays;
+  document.getElementById("settings-note").textContent = "";
+  paintPullScope();
+  paintFlashSetting();
+  paintWakeSetting();
+  paintRestSetting();
+  paintVoiceSelect();
+  document.getElementById("voice-block").style.display =
+    voice.supported() ? "block" : "none";
+  renderSettingsTasks();
+  renderChannelRows();
+}
+
+function paintFlashSetting(){
+  document.getElementById("set-flash").textContent =
+    "Screen wash: " + (settingsFlash ? "On" : "Off");
+}
+
+function toggleFlashSetting(){
+  settingsFlash = !settingsFlash;
+  paintFlashSetting();
+}
+
+function paintWakeSetting(){
+  document.getElementById("set-wake").textContent =
+    "Keep awake: " + (settingsWake ? "On" : "Off");
+}
+
+function toggleWakeSetting(){
+  settingsWake = !settingsWake;
+  paintWakeSetting();
+}
+
+function paintRestSetting(){
+  document.getElementById("set-rest").textContent =
+    "Auto-rest: " + (settingsRest ? "On" : "Off");
+}
+
+function toggleRestSetting(){
+  settingsRest = !settingsRest;
+  paintRestSetting();
+}
+
+function pickPullScope(scope){
+  settingsPullScope = scope;
+  paintPullScope();
+}
+
+/* ── FEEDBACK — open the beta form, or a pre-addressed email ── */
+function openFeedbackForm(){
+  const url = SETTINGS.feedback && SETTINGS.feedback.formUrl;
+  if(url){
+    try{ window.open(url, "_blank", "noopener"); }
+    catch(e){ location.href = url; }
+  }
+}
+
+function emailFeedback(){
+  const addr = SETTINGS.feedback && SETTINGS.feedback.email;
+  if(!addr) return;
+  const subject = encodeURIComponent("Alongside feedback");
+  const body = encodeURIComponent(
+    "What I was doing:\n\nWhat happened / what I'd change:\n\nDevice (phone or computer):\n");
+  location.href = "mailto:" + addr + "?subject=" + subject + "&body=" + body;
+}
+
+function paintPullScope(){
+  document.querySelectorAll("#set-pullscope button").forEach(b => {
+    b.classList.toggle("selected", b.dataset.scope === settingsPullScope);
+  });
+}
+
+function renderChannelRows(){
+  const box = document.getElementById("set-channels");
+  box.innerHTML = "";
+  Object.keys(MOMENT_LABELS).forEach(moment => {
+    const row = document.createElement("div");
+    row.className = "channel-row";
+
+    const label = document.createElement("span");
+    label.className = "grow";
+    label.textContent = MOMENT_LABELS[moment];
+    row.appendChild(label);
+
+    const chips = document.createElement("div");
+    chips.className = "chips";
+    ["chime","voice","off"].forEach(ch => {
+      /* no voice engine on this device? hide the voice option */
+      if(ch === "voice" && !voice.supported()) return;
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = ch === "chime" ? "Chime" : ch === "voice" ? "Voice" : "Off";
+      if(settingsChannels[moment] === ch){ b.classList.add("selected"); }
+      b.onclick = () => {
+        settingsChannels[moment] = ch;
+        renderChannelRows();
+      };
+      chips.appendChild(b);
+    });
+    row.appendChild(chips);
+    box.appendChild(row);
+  });
+}
+
+function renderSettingsTasks(){
+  const box = document.getElementById("set-task-list");
+  box.innerHTML = "";
+  settingsTasks.forEach((t, i) => {
+    const row = document.createElement("div");
+    row.className = "build-row";
+    const label = document.createElement("span");
+    label.className = "grow";
+    label.textContent = t;
+    const x = document.createElement("button");
+    x.type = "button";
+    x.textContent = "✕";
+    x.setAttribute("aria-label", "Remove " + t);
+    x.onclick = () => { settingsTasks.splice(i, 1); renderSettingsTasks(); };
+    row.appendChild(label); row.appendChild(x);
+    box.appendChild(row);
+  });
+}
+
+function addSettingsTask(){
+  const input = document.getElementById("set-task-input");
+  const label = input.value.trim();
+  if(!label){
+    input.placeholder = "Name a quick task, then + Add →";
+    input.focus();
+    return;
+  }
+  if(settingsTasks.length >= 8){
+    document.getElementById("settings-note").textContent =
+      "Eight quick tasks keeps the chips tidy. Remove one to swap.";
+    return;
+  }
+  settingsTasks.push(label);
+  input.value = "";
+  renderSettingsTasks();
+}
+
+function saveSettings(){
+  const name = document.getElementById("set-name").value.trim() || SETTINGS.name;
+  const affirmations = [1,2,3,4].map(i =>
+    document.getElementById("set-aff-" + i).value.trim()
+  ).map((line, i) => line || SETTINGS.affirmations[i]);
+  const quickPicks = settingsTasks.length ? settingsTasks.slice() : SETTINGS.quickPicks;
+  const voiceName = document.getElementById("set-voice").value || null;
+  const listAgeDays = Math.min(60, Math.max(1, Math.round(
+    parseFloat(document.getElementById("set-listage").value) || 7)));
+
+  store.set("profile", {
+    name, affirmations, quickPicks,
+    flashOn: settingsFlash,
+    wakeLockOn: settingsWake,
+    timerRestOn: settingsRest,
+    listAgeDays: listAgeDays,
+    listPullScope: settingsPullScope,
+    voiceName: voiceName,
+    channels: Object.assign({}, settingsChannels)
+  });
+
+  SETTINGS.name = name;
+  SETTINGS.affirmations = affirmations;
+  SETTINGS.quickPicks = quickPicks;
+  SETTINGS.flashOn = settingsFlash;
+  SETTINGS.wakeLockOn = settingsWake;
+  SETTINGS.timerRestOn = settingsRest;
+  SETTINGS.listAgeDays = listAgeDays;
+  SETTINGS.listPullScope = settingsPullScope;
+  SETTINGS.voiceName = voiceName;
+  SETTINGS.nudgeChannel = Object.assign({}, settingsChannels);
+
+  paintGreeting();
+  renderChips();
+  refreshListUI();
+  document.getElementById("settings-note").textContent =
+    "Saved. This file knows you now.";
+}
+
+function resetSettings(){
+  store.remove("profile");
+  /* simplest honest reset: reload the file with its defaults */
+  location.reload();
+}
+
+/* ── EXPORT / IMPORT — carry your setup across devices
+   Bundles the saved profile and every routine into one
+   portable code. Not live sync: a clean one-time move.
+   The code is Base64'd JSON — survives copy-paste and
+   messaging apps without smart-quotes mangling it. */
+const SETUP_TAG = "ALONGSIDE-SETUP-v1";
+
+function buildSetupBundle(){
+  return {
+    tag: SETUP_TAG,
+    exportedAt: new Date().toISOString(),
+    profile: store.get("profile", {}),
+    routines: store.get("routines", []),
+    list: store.get("list", []),
+    nudgesOn: store.get("nudges-on", true)
+  };
+}
+
+/* Base64 that survives emoji and accents both ways */
+function encodeSetup(obj){
+  const json = JSON.stringify(obj);
+  return btoa(unescape(encodeURIComponent(json)));
+}
+function decodeSetup(code){
+  const json = decodeURIComponent(escape(atob(code.trim())));
+  return JSON.parse(json);
+}
+
+function exportSetup(){
+  document.getElementById("import-area").style.display = "none";
+  const code = encodeSetup(buildSetupBundle());
+  document.getElementById("export-text").value = code;
+  document.getElementById("export-area").style.display = "block";
+  document.getElementById("export-note").textContent =
+    "Copy this, or save the file, and bring it to your other device.";
+}
+
+function copyExport(){
+  const ta = document.getElementById("export-text");
+  ta.select();
+  let ok = false;
+  try{ ok = document.execCommand("copy"); }catch(e){}
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(ta.value).then(
+      () => { document.getElementById("export-note").textContent = "Copied. Paste it on your other device's Import."; },
+      () => {}
+    );
+  }
+  document.getElementById("export-note").textContent =
+    ok ? "Copied. Paste it on your other device's Import."
+       : "Select all the text above and copy it.";
+}
+
+function downloadExport(){
+  const code = document.getElementById("export-text").value;
+  try{
+    const blob = new Blob([code], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "alongside-setup.txt";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    document.getElementById("export-note").textContent = "Saved as alongside-setup.txt.";
+  }catch(e){
+    document.getElementById("export-note").textContent = "Couldn't save a file here — copy the text instead.";
+  }
+}
+
+function showImportBox(){
+  document.getElementById("export-area").style.display = "none";
+  document.getElementById("import-text").value = "";
+  document.getElementById("import-note").textContent = "";
+  document.getElementById("import-area").style.display = "block";
+}
+
+function importSetup(){
+  const raw = document.getElementById("import-text").value.trim();
+  if(!raw){
+    document.getElementById("import-note").textContent = "Paste the code first.";
+    return;
+  }
+  let bundle;
+  try{
+    bundle = decodeSetup(raw);
+  }catch(e){
+    document.getElementById("import-note").textContent =
+      "That doesn't look like a setup code. Copy the whole thing and try again.";
+    return;
+  }
+  if(!bundle || bundle.tag !== SETUP_TAG){
+    document.getElementById("import-note").textContent =
+      "That code isn't an Alongside setup. Nothing changed.";
+    return;
+  }
+
+  if(bundle.profile){ store.set("profile", bundle.profile); }
+  if(Array.isArray(bundle.routines)){ store.set("routines", bundle.routines); }
+  if(Array.isArray(bundle.list)){ store.set("list", bundle.list); }
+  if(typeof bundle.nudgesOn === "boolean"){ store.set("nudges-on", bundle.nudgesOn); }
+
+  document.getElementById("import-note").textContent =
+    "Brought it in. Reloading with your setup…";
+  setTimeout(() => location.reload(), 900);
+}
+
+/* ── 3q. MIC INPUT — serves four screens now ───── */
+const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+function listen(inputId, btnId){
+  if(!Recognition) return;
+  const mic = document.getElementById(btnId);
+  try{
+    const r = new Recognition();
+    r.lang = "en-US";
+    r.interimResults = false;
+    mic.classList.add("listening");
+    r.onresult = (e) => {
+      document.getElementById(inputId).value = e.results[0][0].transcript;
+    };
+    r.onend = () => mic.classList.remove("listening");
+    r.onerror = () => mic.classList.remove("listening");
+    r.start();
+  }catch(e){
+    mic.classList.remove("listening");
+  }
+}
+
+/* ── 3r. RENDER HELPERS ─────────────────────────── */
+function renderLines(boxId, lines){
+  const box = document.getElementById(boxId);
+  box.innerHTML = "";
+  lines.forEach(line => {
+    const p = document.createElement("p");
+    p.textContent = line;
+    box.appendChild(p);
+  });
+}
+
+function renderChips(){
+  const box = document.getElementById("chips");
+  box.innerHTML = "";
+  SETTINGS.quickPicks.forEach(pick => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = pick;
+    b.onclick = () => { document.getElementById("task-input").value = pick; };
+    box.appendChild(b);
+  });
+
+  const bbox = document.getElementById("build-chips");
+  bbox.innerHTML = "";
+  SETTINGS.quickPicks.forEach(pick => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = "+ " + pick;
+    b.onclick = () => addDraftTask(pick);
+    bbox.appendChild(b);
+  });
+}
+
+function renderDurationChips(boxId, getCurrent, setCurrent, includeNone){
+  const box = document.getElementById(boxId);
+  box.innerHTML = "";
+  const options = includeNone ? [0].concat(SETTINGS.timerMinutes) : SETTINGS.timerMinutes;
+  options.forEach(min => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = (min === 0) ? "No timer" : min + " min";
+    if(min === getCurrent()) b.classList.add("selected");
+    b.onclick = () => {
+      setCurrent(min);
+      box.querySelectorAll("button").forEach(x => x.classList.remove("selected"));
+      b.classList.add("selected");
+    };
+    box.appendChild(b);
+  });
+}
+
+function paintGreeting(){
+  const h = new Date().getHours();
+  const part = (h < 12) ? "Good morning" : (h < 17) ? "Good afternoon" : "Good evening";
+  const who = SETTINGS.name ? (", " + SETTINGS.name) : "";
+  document.getElementById("greeting").textContent = part + who + ".";
+}
+
+/* ── THE FIRST-RUN GATE ─────────────────────────
+   No name on this device yet? Cover the app and
+   ask for one. Once it's set, the gate never shows
+   again (unless the profile is reset). */
+function needsWelcome(){
+  return !SETTINGS.name || !SETTINGS.name.trim();
+}
+
+function showWelcome(){
+  document.getElementById("welcome-gate").style.display = "flex";
+  setTimeout(() => {
+    const inp = document.getElementById("gate-name");
+    if(inp){ inp.focus(); }
+  }, 350);
+}
+
+function finishWelcome(){
+  const inp = document.getElementById("gate-name");
+  const name = inp.value.trim();
+  if(!name){
+    document.getElementById("gate-note").textContent =
+      "Just a first name, a nickname — whatever you'd like to be called.";
+    inp.focus();
+    return;
+  }
+  SETTINGS.name = name;
+  /* fold the name into whatever profile already exists */
+  const prof = store.get("profile", {});
+  prof.name = name;
+  store.set("profile", prof);
+
+  paintGreeting();
+  document.getElementById("welcome-gate").style.display = "none";
+}
+
+/* ── 3s. BOOT — runs once when the file opens ──── */
+function boot(){
+  store.init();
+  loadProfile();                       // the You tab's saves win
+  sound.enabled = store.get("nudges-on", true);
+  voice.init();
+  paintNudgeToggles();
+  paintGreeting();
+
+  if(!Recognition){
+    document.querySelectorAll(".mic-btn").forEach(m => m.style.display = "none");
+  }
+
+  document.getElementById("build-input").addEventListener("keydown", (e) => {
+    if(e.key === "Enter"){ addDraftTask(); }
+  });
+  document.getElementById("set-task-input").addEventListener("keydown", (e) => {
+    if(e.key === "Enter"){ addSettingsTask(); }
+  });
+  document.getElementById("rt-step-input").addEventListener("keydown", (e) => {
+    if(e.key === "Enter"){ addRoutineStep(); }
+  });
+  document.getElementById("gate-name").addEventListener("keydown", (e) => {
+    if(e.key === "Enter"){ finishWelcome(); }
+  });
+  document.getElementById("list-input").addEventListener("keydown", (e) => {
+    /* textarea: plain Enter = new line (keep typing a list);
+       Ctrl/Cmd+Enter = add them all */
+    if(e.key === "Enter" && (e.ctrlKey || e.metaKey)){ addListItems(); }
+  });
+
+  renderChips();
+  renderLines("affirmation-lines", SETTINGS.affirmations);
+  refreshListUI();
+  renderDurationChips("durations",
+    () => chosenMinutes, (m) => { chosenMinutes = m; }, true);
+  renderDurationChips("build-durations",
+    () => draftMinutes, (m) => { draftMinutes = m; }, false);
+  renderDurationChips("solo-durations",
+    () => soloMinutes, (m) => { soloMinutes = m; }, false);
+
+  /* the gate goes up last, once everything behind it is ready */
+  if(needsWelcome()){ showWelcome(); }
+}
+
+boot();
+</script>
+</body>
+</html>
