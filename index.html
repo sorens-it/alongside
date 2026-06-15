@@ -8,6 +8,20 @@
      One file. One whole app. No internet needed, no installs, nothing
      to sign up for. Open it in any browser and it runs.
 
+     NEW IN v0.23 (from real-use feedback)
+     · Reorder tasks in the run builder by dragging the ≡ handle.
+     · Reorder routines the same way, on the Routines tab.
+     · Rename a task mid-run by tapping it (fixes a misspell).
+     · Skipped List items go back to the List (they weren't done).
+     · Rename the three energy buttons in ⚙️ You — "Low Energy /
+       Mid / High", "Can't / Can / CRUSH", whatever's yours. The
+       behavior underneath stays the same.
+     · A finished Timer-tab session logs a win ("15-minute timer").
+       Only timers you let finish; skipped/reset don't count;
+       added time counts toward the total.
+     · Quick tasks tidied: removed Water and 5-min reset, and
+       "One page" is now "Read one page".
+
      NEW IN v0.22.2
      · A fourth starter: 🏃 Exercise — a complete zero-equipment,
        at-home session (~45–60 min). Prep (snack, water, clothing)
@@ -634,9 +648,9 @@ footer{
     <p class="sub">How's your energy right now? No wrong answers.</p>
 
     <!-- 🔧 Reword these however feels true to you -->
-    <button onclick="chooseEnergy('low')">🪫 &nbsp;I'm running low</button>
-    <button onclick="chooseEnergy('mid')">🌗 &nbsp;Somewhere in the middle</button>
-    <button onclick="chooseEnergy('high')">⚡ &nbsp;I've got some charge</button>
+    <button id="energy-low" onclick="chooseEnergy('low')">🪫 &nbsp;<span class="energy-label">I'm running low</span></button>
+    <button id="energy-mid" onclick="chooseEnergy('mid')">🌗 &nbsp;<span class="energy-label">Somewhere in the middle</span></button>
+    <button id="energy-high" onclick="chooseEnergy('high')">⚡ &nbsp;<span class="energy-label">I've got some charge</span></button>
   </section>
 
   <!-- SCREEN 2 · GROUND (low) -->
@@ -993,6 +1007,11 @@ footer{
   <input type="text" id="set-aff-3" aria-label="Affirmation three">
   <input type="text" id="set-aff-4" aria-label="Affirmation four">
 
+  <p class="set-label">The three energy buttons (rename them to fit you)</p>
+  <input type="text" id="set-energy-low"  aria-label="Low energy button">
+  <input type="text" id="set-energy-mid"  aria-label="Middle energy button">
+  <input type="text" id="set-energy-high" aria-label="High energy button">
+
   <p class="set-label">Quick tasks (the tap-instead-of-type chips)</p>
   <div class="input-row">
     <input type="text" id="set-task-input" placeholder="Add a quick task…"
@@ -1093,7 +1112,7 @@ footer{
     <span class="t-ico">⚙️</span><span class="t-lab">You</span></button>
 </nav>
 
-<footer>Alongside v0.22.2 · an ORO project</footer>
+<footer>Alongside v0.23 · an ORO project</footer>
 
 <script>
 /* ════════════════════════════════════════════════
@@ -1116,8 +1135,7 @@ const SETTINGS = {
   ],
 
   quickPicks: [                                    // 🔧 default quick tasks
-    "Dishes", "Water", "Laundry",
-    "5-min reset", "Step outside", "One page"
+    "Dishes", "Laundry", "Step outside", "Read one page"
   ],
 
   midLines: [                                      // 🔧 STEADY's three lines
@@ -1176,6 +1194,14 @@ const SETTINGS = {
   timerRestOn: true,        // 🔧 Timer tab follows work with a rest
   listAgeDays: 7,           // 🔧 List items flag "waiting a while" past this
   listPullScope: "both",    // 🔧 where the List offers to pull: "both" | "high" | "off"
+
+  /* 🔧 the three energy buttons on the Now screen — rename freely.
+     The behavior each one triggers stays mapped underneath. */
+  energyLabels: {
+    low:  "I'm running low",
+    mid:  "Somewhere in the middle",
+    high: "I've got some charge"
+  },
 
   /* 🔧 beta feedback — where the Send-feedback button points */
   feedback: {
@@ -1344,6 +1370,13 @@ function loadProfile(){
   }
   if(["both","high","off"].includes(saved.listPullScope)){
     SETTINGS.listPullScope = saved.listPullScope;
+  }
+  if(saved.energyLabels){
+    ["low","mid","high"].forEach(k => {
+      if(typeof saved.energyLabels[k] === "string" && saved.energyLabels[k].trim()){
+        SETTINGS.energyLabels[k] = saved.energyLabels[k];
+      }
+    });
   }
   if(saved.voiceName){ SETTINGS.voiceName = saved.voiceName; }
   if(saved.channels){
@@ -1874,10 +1907,22 @@ function renderDraft(){
   draft.tasks.forEach((t, i) => {
     const row = document.createElement("div");
     row.className = "build-row";
+    row.dataset.i = i;
 
+    /* ≡ drag to reorder tasks in the run */
+    const grip = makeGrip(t.label);
+    wireDragHandle(grip, row, "build-list", (order) => {
+      draft.tasks = order.map(idx => draft.tasks[idx]);
+      renderDraft();
+    });
+
+    /* tap the name to fix a misspell */
     const label = document.createElement("span");
     label.className = "grow";
     label.textContent = (i + 1) + ". " + t.label;
+    label.style.cursor = "text";
+    label.title = "Tap to rename";
+    label.onclick = () => startRenameDraftTask(i, label);
 
     const dur = document.createElement("button");
     dur.type = "button";
@@ -1890,7 +1935,8 @@ function renderDraft(){
     x.setAttribute("aria-label", "Remove " + t.label);
     x.onclick = () => removeDraftTask(i);
 
-    row.appendChild(label); row.appendChild(dur); row.appendChild(x);
+    row.appendChild(grip); row.appendChild(label);
+    row.appendChild(dur); row.appendChild(x);
     box.appendChild(row);
   });
 
@@ -1903,6 +1949,35 @@ function renderDraft(){
 
   document.getElementById("build-start").textContent =
     n > 0 ? "Start the run (" + n + ")" : "Start the run";
+}
+
+/* tap a builder task's name → rename it in place (misspell fix) */
+function startRenameDraftTask(i, labelSpan){
+  const tk = draft.tasks[i];
+  const input = document.createElement("input");
+  input.type = "text";
+  input.value = tk.label;
+  input.setAttribute("aria-label", "Rename task");
+  input.style.margin = "0";
+  input.style.padding = ".35rem .6rem";
+  input.style.fontSize = "1rem";
+  input.style.borderRadius = "10px";
+  let done = false;
+  const commit = () => {
+    if(done) return; done = true;
+    const v = input.value.trim();
+    if(v){ tk.label = v; }
+    renderDraft();
+  };
+  input.addEventListener("blur", commit);
+  input.addEventListener("keydown", (e) => {
+    if(e.key === "Enter"){ e.preventDefault(); input.blur(); }
+    else if(e.key === "Escape"){ done = true; renderDraft(); }
+  });
+  labelSpan.textContent = "";
+  labelSpan.appendChild(input);
+  input.focus();
+  input.select();
 }
 
 /* ── 3j. RUNNING A RUN ──────────────────────────── */
@@ -1922,7 +1997,8 @@ function beginSession(mode, tasks, breakMin){
     mode: mode,
     tasks: tasks.map(t => ({
       label: t.label, minutes: t.minutes,
-      status: "todo", start: null, end: null
+      status: "todo", start: null, end: null,
+      fromList: !!t.fromList     // pulled from the List → returns there if skipped
     })),
     i: 0,
     breakMin: breakMin,
@@ -1989,6 +2065,8 @@ function advanceRun(completed){
     if(store.get(todayKey(), []).length === 13){ session.hit13 = true; }
   }else{
     t.status = "parked";
+    /* it came from the List and didn't get done → put it back */
+    if(t.fromList){ returnTaskToList(t.label); }
   }
 
   const nextIdx = session.i + 1;
@@ -2003,6 +2081,19 @@ function advanceRun(completed){
 }
 
 function skipTask(){ advanceRun(false); }
+
+/* a List-pulled task that didn't get done goes back on the List
+   (fresh timestamp, no duplicate if it's somehow already there) */
+function returnTaskToList(label){
+  const list = loadList();
+  if(list.some(it => it.label === label)) return;
+  list.push({
+    id: "back-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7),
+    label: label,
+    added: Date.now()
+  });
+  saveList(list);
+}
 
 function enterBreak(nextIdx, spareMs, doneLabel){
   session.pendingNext = nextIdx;
@@ -2034,6 +2125,12 @@ function endRun(){
   if(session && document.getElementById("screen-focus").classList.contains("active")){
     const t = session.tasks[session.i];
     if(t.status === "todo"){ t.status = "parked"; t.end = new Date(); }
+  }
+  /* any pulled-from-List tasks that never got done go back to the List */
+  if(session){
+    session.tasks.forEach(t => {
+      if(t.fromList && t.status !== "done"){ returnTaskToList(t.label); }
+    });
   }
   exitPausedUI();
   focusTimer.reset();
@@ -2280,9 +2377,18 @@ function seedStarterListItems(){
 function renderRoutineList(){
   const box = document.getElementById("rt-list");
   box.innerHTML = "";
-  routines.forEach(rt => {
+  routines.forEach((rt, i) => {
     const row = document.createElement("div");
     row.className = "build-row";
+    row.dataset.i = i;
+
+    /* ≡ drag to reorder routines */
+    const grip = makeGrip(rt.name);
+    wireDragHandle(grip, row, "rt-list", (order) => {
+      routines = order.map(idx => routines[idx]);
+      store.set("routines", routines);
+      renderRoutineList();
+    });
 
     const label = document.createElement("span");
     label.className = "grow";
@@ -2315,13 +2421,13 @@ function renderRoutineList(){
       renderRoutineList();
     };
 
-    row.appendChild(label); row.appendChild(go);
+    row.appendChild(grip); row.appendChild(label); row.appendChild(go);
     row.appendChild(ed); row.appendChild(x);
     box.appendChild(row);
   });
 
   document.getElementById("rt-list-note").textContent =
-    routines.length ? "Tap ▶ to launch, ✎ to edit, ✕ twice to delete."
+    routines.length ? "Drag ≡ to reorder · ▶ launch · ✎ edit · ✕ twice to delete."
                     : "Nothing here yet. Build your first one — breakfast counts.";
 }
 
@@ -2378,10 +2484,12 @@ function removeRoutineStep(idx){
 
 /* drag state for reordering steps */
 let dragRow = null;
+let dragBoxId = null;        // which container we're dragging within
+let dragCommit = null;       // what to call when the drag ends
 
 function handleDragMove(e){
-  if(!dragRow) return;
-  const box = document.getElementById("rt-steps");
+  if(!dragRow || !dragBoxId) return;
+  const box = document.getElementById(dragBoxId);
   const rows = Array.from(box.querySelectorAll(".build-row")).filter(r => r !== dragRow);
   let placed = false;
   for(const r of rows){
@@ -2398,13 +2506,36 @@ function handleDragMove(e){
 function handleDragEnd(){
   if(!dragRow) return;
   dragRow.classList.remove("dragging");
-  /* the DOM order is now the truth — commit it to the data */
-  const box = document.getElementById("rt-steps");
+  const box = document.getElementById(dragBoxId);
+  /* the DOM order is now the truth — read it back as indices */
   const order = Array.from(box.querySelectorAll(".build-row"))
     .map(r => parseInt(r.dataset.i, 10));
-  editingRoutine.steps = order.map(i => editingRoutine.steps[i]);
-  dragRow = null;
-  renderRoutineSteps();   /* renumber cleanly */
+  const commit = dragCommit;
+  dragRow = null; dragBoxId = null; dragCommit = null;
+  if(commit){ commit(order); }
+}
+
+/* attach drag behavior to a ≡ handle for a given row, container,
+   and commit-callback. Reused by steps, tasks, and routines. */
+function wireDragHandle(grip, row, boxId, commitFn){
+  grip.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    dragRow = row; dragBoxId = boxId; dragCommit = commitFn;
+    row.classList.add("dragging");
+    try{ grip.setPointerCapture(e.pointerId); }catch(err){}
+  });
+  grip.addEventListener("pointermove", handleDragMove);
+  grip.addEventListener("pointerup", handleDragEnd);
+  grip.addEventListener("pointercancel", handleDragEnd);
+}
+
+function makeGrip(labelForAria){
+  const grip = document.createElement("button");
+  grip.type = "button";
+  grip.className = "drag-handle";
+  grip.textContent = "≡";
+  grip.setAttribute("aria-label", "Drag to reorder " + labelForAria);
+  return grip;
 }
 
 /* tap a step's name → it becomes an input, right there */
@@ -2438,20 +2569,11 @@ function renderRoutineSteps(){
     row.dataset.i = i;
 
     /* ≡ grab here to reorder */
-    const grip = document.createElement("button");
-    grip.type = "button";
-    grip.className = "drag-handle";
-    grip.textContent = "≡";
-    grip.setAttribute("aria-label", "Drag to reorder " + s.label);
-    grip.addEventListener("pointerdown", (e) => {
-      e.preventDefault();
-      dragRow = row;
-      row.classList.add("dragging");
-      try{ grip.setPointerCapture(e.pointerId); }catch(err){}
+    const grip = makeGrip(s.label);
+    wireDragHandle(grip, row, "rt-steps", (order) => {
+      editingRoutine.steps = order.map(idx => editingRoutine.steps[idx]);
+      renderRoutineSteps();
     });
-    grip.addEventListener("pointermove", handleDragMove);
-    grip.addEventListener("pointerup", handleDragEnd);
-    grip.addEventListener("pointercancel", handleDragEnd);
 
     /* tap the name to rename it in place */
     const label = document.createElement("span");
@@ -2785,9 +2907,10 @@ function confirmPull(){
   }
 
   openBuilder(mode);
-  /* drop the picked items straight into the fresh builder */
+  /* drop the picked items straight into the fresh builder, tagged so
+     that if one gets skipped in the run, it returns to the List */
   picked.forEach(it => {
-    draft.tasks.push({ label: it.label, minutes: draftMinutes });
+    draft.tasks.push({ label: it.label, minutes: draftMinutes, fromList: true });
   });
   renderDraft();
 }
@@ -2867,10 +2990,15 @@ function renderWinsTab(){
    can be turned off entirely in ⚙️ You. */
 let soloMinutes = 10;   // 🔧 default window on the Timer tab
 let soloPhase = "work";
+let soloWorkStart = null;   // wall-clock when the work timer began
 
 function soloStart(){
   if(soloPhase === "rest") return;   /* already resting; use Skip/Reset */
+  soloWorkStart = Date.now();
   soloTimer.start(soloMinutes, () => {
+    /* the work timer FINISHED on its own → log it as a win.
+       actual elapsed wall-clock captures any time added mid-run. */
+    logSoloWin();
     if(SETTINGS.timerRestOn){ beginSoloRest(); }
     else{
       document.getElementById("solo-start").textContent = "Time. Start another?";
@@ -2879,6 +3007,19 @@ function soloStart(){
   });
   document.getElementById("solo-start").textContent = "Running…";
   soloButtons(true);
+}
+
+/* log a finished Timer-tab work session as a win.
+   Only genuine completions reach here; skip/reset never call this.
+   Rounds to the nearest minute of actual focused time. */
+function logSoloWin(){
+  if(soloWorkStart === null) return;
+  const elapsedMs = Date.now() - soloWorkStart;
+  soloWorkStart = null;
+  const mins = Math.max(1, Math.round(elapsedMs / 60000));
+  const now = new Date();
+  addWin(mins + "-minute timer", new Date(now - elapsedMs), now);
+  sound.ready(); sound.play("win");
 }
 
 function beginSoloRest(){
@@ -2915,6 +3056,7 @@ function soloPauseResume(){
 function soloReset(){
   soloTimer.reset();
   soloPhase = "work";
+  soloWorkStart = null;          /* a reset is not a completion — no win */
   document.getElementById("solo-face").classList.remove("resting");
   document.getElementById("solo-skiprest").style.display = "none";
   document.getElementById("solo-start").textContent = "Start";
@@ -2940,6 +3082,9 @@ function openSettings(){
   SETTINGS.affirmations.forEach((line, i) => {
     document.getElementById("set-aff-" + (i + 1)).value = line;
   });
+  document.getElementById("set-energy-low").value  = SETTINGS.energyLabels.low;
+  document.getElementById("set-energy-mid").value  = SETTINGS.energyLabels.mid;
+  document.getElementById("set-energy-high").value = SETTINGS.energyLabels.high;
   settingsTasks = SETTINGS.quickPicks.slice();
   settingsChannels = Object.assign({}, SETTINGS.nudgeChannel);
   settingsFlash = SETTINGS.flashOn;
@@ -3096,6 +3241,11 @@ function saveSettings(){
   const voiceName = document.getElementById("set-voice").value || null;
   const listAgeDays = Math.min(60, Math.max(1, Math.round(
     parseFloat(document.getElementById("set-listage").value) || 7)));
+  const energyLabels = {
+    low:  document.getElementById("set-energy-low").value.trim()  || SETTINGS.energyLabels.low,
+    mid:  document.getElementById("set-energy-mid").value.trim()  || SETTINGS.energyLabels.mid,
+    high: document.getElementById("set-energy-high").value.trim() || SETTINGS.energyLabels.high
+  };
 
   store.set("profile", {
     name, affirmations, quickPicks,
@@ -3104,6 +3254,7 @@ function saveSettings(){
     timerRestOn: settingsRest,
     listAgeDays: listAgeDays,
     listPullScope: settingsPullScope,
+    energyLabels: energyLabels,
     voiceName: voiceName,
     channels: Object.assign({}, settingsChannels)
   });
@@ -3116,10 +3267,12 @@ function saveSettings(){
   SETTINGS.timerRestOn = settingsRest;
   SETTINGS.listAgeDays = listAgeDays;
   SETTINGS.listPullScope = settingsPullScope;
+  SETTINGS.energyLabels = energyLabels;
   SETTINGS.voiceName = voiceName;
   SETTINGS.nudgeChannel = Object.assign({}, settingsChannels);
 
   paintGreeting();
+  paintEnergyLabels();
   renderChips();
   refreshListUI();
   document.getElementById("settings-note").textContent =
@@ -3329,6 +3482,17 @@ function paintGreeting(){
   document.getElementById("greeting").textContent = part + who + ".";
 }
 
+function paintEnergyLabels(){
+  const map = { low:"energy-low", mid:"energy-mid", high:"energy-high" };
+  ["low","mid","high"].forEach(k => {
+    const btn = document.getElementById(map[k]);
+    if(btn){
+      const span = btn.querySelector(".energy-label");
+      if(span){ span.textContent = SETTINGS.energyLabels[k]; }
+    }
+  });
+}
+
 /* ── THE FIRST-RUN GATE ─────────────────────────
    No name on this device yet? Cover the app and
    ask for one. Once it's set, the gate never shows
@@ -3374,6 +3538,7 @@ function boot(){
   voice.init();
   paintNudgeToggles();
   paintGreeting();
+  paintEnergyLabels();
 
   if(!Recognition){
     document.querySelectorAll(".mic-btn").forEach(m => m.style.display = "none");
