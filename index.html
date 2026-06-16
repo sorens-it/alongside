@@ -8,6 +8,24 @@
      One file. One whole app. No internet needed, no installs, nothing
      to sign up for. Open it in any browser and it runs.
 
+     NEW IN v0.25 (bug fixes + real-use tuning)
+     · DATA-LOSS FIX: pulling List items into a run no longer
+       empties the List until you actually press Start. Back out
+       before starting and nothing is lost — the List is exactly
+       as you left it.
+     · OVERTIME: when a timer hits zero and you haven't tapped
+       Done, it now counts UP in clay-red ("+2:14") instead of
+       freezing — so you know you're past your plan. A soft chime
+       returns every 2 minutes in case you've lost track. Works
+       in runs, the single task, and the Timer tab. Adding time
+       or tapping Done clears it.
+     · REORDER BY ARROWS: the fiddly drag handle is gone. Tasks,
+       routine steps, and routines now reorder with simple ▲▼
+       buttons — reliable on phone and computer both.
+     · TAP-TO-CYCLE TIMES ARE BACK: tap a task's minutes to cycle
+       presets (5→10→15→25→45), AND type a custom number. Both,
+       everywhere times are set.
+
      NEW IN v0.24
      · CUSTOM TIMES EVERYWHERE. In the run builder, each task's
        minutes is now a number you type directly (1–120), like
@@ -488,6 +506,10 @@ input::placeholder{ color:var(--faded); }
 
 .timer-face.resting .ring-meter{ stroke:var(--sage); }
 
+/* overtime: timer has run past zero and is counting up in red */
+.timer-face.overtime .ring-meter{ stroke:var(--clay); animation: lastlight 2s ease-in-out infinite; }
+.timer-face.overtime .timer-clock{ color:var(--clay); }
+
 .time-range{
   text-align:center; color:var(--faded);
   font-size:.95rem; margin-bottom:.4rem;
@@ -523,20 +545,32 @@ input::placeholder{ color:var(--faded); }
   border-radius:999px;
 }
 /* routine-step drag handle: grab ≡ and slide */
-.drag-handle{
-  cursor:grab;
-  touch-action:none;          /* the handle owns the touch, not the scroll */
-  user-select:none;
-  -webkit-user-select:none;
-  font-size:1.1rem;
-  padding:.3rem .35rem !important;
-  border:none !important;
-  background:transparent !important;
-  color:var(--faded);
+/* up/down reorder arrows — stacked, compact, reliable on touch */
+.move-arrows{
+  display:flex; flex-direction:column; gap:1px;
+  flex-shrink:0;
 }
-.build-row.dragging{
-  opacity:.55;
-  border-left-color:var(--sage);
+.move-arrow{
+  width:auto !important; min-height:0 !important;
+  margin:0 !important; padding:.05rem .4rem !important;
+  font-size:.7rem; line-height:1.1; border-radius:7px !important;
+  background:var(--adobe); color:var(--faded);
+  border:1px solid var(--edge) !important;
+}
+.move-arrow:disabled{ opacity:.3; }
+.move-arrow:active{ background:var(--oro-deep); color:#221a08; }
+
+/* tap-to-cycle minutes button + typeable field, side by side */
+.cyc-min{
+  width:auto !important; min-height:40px; margin:0 !important;
+  padding:.3rem .55rem !important; font-size:.85rem;
+  border-radius:999px !important; flex-shrink:0;
+  font-variant-numeric: tabular-nums;
+}
+.type-min{
+  width:3.6rem !important; margin:0 !important;
+  padding:.3rem .35rem !important; font-size:.9rem;
+  border-radius:10px !important; text-align:center; flex-shrink:0;
 }
 .build-row .grow input{
   margin:0; padding:.35rem .6rem;
@@ -971,6 +1005,7 @@ footer{
   </div>
 
   <button class="primary" id="solo-start" onclick="soloStart()">Start</button>
+  <button class="primary" id="solo-wrap" onclick="wrapSoloWork()" style="display:none;">Wrap up — done ✓</button>
   <div class="row">
     <button id="solo-pause" onclick="soloPauseResume()" style="display:none;">Pause</button>
     <button id="solo-skiprest" onclick="skipSoloRest()" style="display:none;">Skip rest</button>
@@ -1121,7 +1156,7 @@ footer{
     <span class="t-ico">⚙️</span><span class="t-lab">You</span></button>
 </nav>
 
-<footer>Alongside v0.24 · an ORO project</footer>
+<footer>Alongside v0.25 · an ORO project</footer>
 
 <script>
 /* ════════════════════════════════════════════════
@@ -1652,6 +1687,10 @@ function createTimer(ui){
   let nudges = [], fired = new Set(), flashTimer = null;
   let lastTick = null;
   let lastDrawAt = 0;   /* for sleep catch-up */
+  let allowOvertime = false;     /* count up in red past zero? */
+  let overtime = false;          /* currently in overtime */
+  let overStartAt = 0;           /* when zero was crossed */
+  let lastOverNudge = 0;         /* minutes-mark of last overtime re-nudge */
 
   function paintRange(){
     ui.range.innerHTML = "<strong>" + clockTime(startedAt) + "</strong> → <strong>"
@@ -1713,23 +1752,51 @@ function createTimer(ui){
       }
     }
 
-    if(leftMs <= 0 && running){
-      stopTicking();
-      running = false;
-      awake.release();
-      ui.face.classList.remove("closing");
-      if(quiet){
-        ui.note.textContent = "Ready when you are.";
-        nudgeAudio("breakend", "ready", "Break's over.");
-        flashScreen(SETTINGS.nudgeFlash.breakend);
-        try{ if(navigator.vibrate) navigator.vibrate(40); }catch(e){}
-      }else{
-        ui.note.textContent = SETTINGS.nudgeWords.end;
-        nudgeAudio("end", "end", SETTINGS.nudgeWords.end);
-        flashScreen(SETTINGS.nudgeFlash.end);
-        try{ if(navigator.vibrate) navigator.vibrate([180, 90, 180]); }catch(e){}
+    if(leftMs <= 0 && running && !overtime){
+      /* reached zero. Break/quiet timers just finish. Work timers
+         that allow overtime keep going, counting up in red. */
+      if(quiet || !allowOvertime){
+        stopTicking();
+        running = false;
+        awake.release();
+        ui.face.classList.remove("closing");
+        if(quiet){
+          ui.note.textContent = "Ready when you are.";
+          nudgeAudio("breakend", "ready", "Break's over.");
+          flashScreen(SETTINGS.nudgeFlash.breakend);
+          try{ if(navigator.vibrate) navigator.vibrate(40); }catch(e){}
+        }else{
+          ui.note.textContent = SETTINGS.nudgeWords.end;
+          nudgeAudio("end", "end", SETTINGS.nudgeWords.end);
+          flashScreen(SETTINGS.nudgeFlash.end);
+          try{ if(navigator.vibrate) navigator.vibrate([180, 90, 180]); }catch(e){}
+        }
+        if(onFinish) onFinish();
+        return;
       }
-      if(onFinish) onFinish();
+      /* ENTER OVERTIME: announce time's up once, then climb in red */
+      overtime = true;
+      overStartAt = Date.now();
+      lastOverNudge = 0;
+      ui.face.classList.remove("closing");
+      ui.face.classList.add("overtime");
+      nudgeAudio("end", "end", SETTINGS.nudgeWords.end);
+      flashScreen(SETTINGS.nudgeFlash.end);
+      try{ if(navigator.vibrate) navigator.vibrate([180, 90, 180]); }catch(e){}
+      if(onFinish) onFinish();   /* run's "time's up, still counts" line */
+    }
+
+    if(overtime && running){
+      const overMs = Date.now() - overStartAt;
+      ui.clock.textContent = "+" + fmtClock(overMs);
+      ui.meter.style.strokeDashoffset = 0;        /* ring stays full */
+      /* gentle re-nudge every 2 minutes so you don't lose track */
+      const mark = Math.floor(overMs / 120000);   /* 0,1,2… every 2 min */
+      if(mark > lastOverNudge){
+        lastOverNudge = mark;
+        nudgeAudio("end", "minute", "Still going. Add time or tap done.");
+        try{ if(navigator.vibrate) navigator.vibrate(40); }catch(e){}
+      }
     }
   }
 
@@ -1737,12 +1804,15 @@ function createTimer(ui){
   function stopTicking(){ if(ticking){ clearInterval(ticking); ticking = null; } }
 
   return {
-    start(minutes, finishCallback, beQuiet){
+    start(minutes, finishCallback, beQuiet, overtimeOK){
       totalMs = minutes * 60 * 1000;
       startedAt = new Date();
       endAt = Date.now() + totalMs;
       onFinish = finishCallback || null;
       quiet = !!beQuiet;
+      allowOvertime = !!overtimeOK;
+      overtime = false; overStartAt = 0; lastOverNudge = 0;
+      ui.face.classList.remove("overtime");
       nudges = quiet ? [] : buildNudges(totalMs);
       fired = new Set();
       lastTick = null;
@@ -1772,6 +1842,25 @@ function createTimer(ui){
     adjust(deltaMs){
       if(!running) return;
       const now = Date.now();
+
+      /* in overtime, adding time means: leave the red, run a fresh
+         countdown of the amount added. (Subtracting does nothing useful
+         in overtime, so treat any adjust as "give me this much time".) */
+      if(overtime){
+        const add = Math.max(10000, Math.abs(deltaMs));
+        overtime = false; overStartAt = 0; lastOverNudge = 0;
+        ui.face.classList.remove("overtime");
+        totalMs = add;
+        endAt = now + add;
+        nudges = buildNudges(totalMs);
+        fired = new Set();
+        lastTick = null;
+        ui.note.textContent = "+" + fmtClock(add);
+        paintRange();
+        draw();
+        return;
+      }
+
       const curEnd = paused ? (now + leftMs) : endAt;
       let newEnd = curEnd + deltaMs;
       const minEnd = now + 10000;
@@ -1799,19 +1888,23 @@ function createTimer(ui){
       stopTicking();
       if(running && !paused){ awake.release(); }
       running = false; paused = false;
+      overtime = false; overStartAt = 0; lastOverNudge = 0;
       lastTick = null;
       lastDrawAt = 0;
       ui.clock.textContent = "0:00";
       ui.meter.style.strokeDashoffset = 0;
       ui.range.textContent = "";
       ui.note.textContent = "";
-      ui.face.classList.remove("closing", "nudged");
+      ui.face.classList.remove("closing", "nudged", "overtime");
       clearTimeout(flashTimer);
     },
     isRunning(){ return running; },
     isPaused(){ return paused; },
+    isOvertime(){ return overtime; },
+    overtimeMs(){ return overtime ? (Date.now() - overStartAt) : 0; },
     remainingMs(){
       if(!running) return 0;
+      if(overtime) return 0;
       return paused ? leftMs : Math.max(0, endAt - Date.now());
     }
   };
@@ -1911,10 +2004,9 @@ function renderDraft(){
     row.className = "build-row";
     row.dataset.i = i;
 
-    /* ≡ drag to reorder tasks in the run */
-    const grip = makeGrip(t.label);
-    wireDragHandle(grip, row, "build-list", (order) => {
-      draft.tasks = order.map(idx => draft.tasks[idx]);
+    /* ▲▼ arrows to reorder — reliable on touch */
+    const arrows = makeMoveArrows(i, draft.tasks.length, (from, to) => {
+      arrayMove(draft.tasks, from, to);
       renderDraft();
     });
 
@@ -1926,14 +2018,29 @@ function renderDraft(){
     label.title = "Tap to rename";
     label.onclick = () => startRenameDraftTask(i, label);
 
-    /* minutes: type any number, 1–120, just like routine steps */
+    /* minutes: TAP to cycle presets (what Trisha liked), or TYPE a
+       custom number in the field. Both live here. */
+    const cyc = document.createElement("button");
+    cyc.type = "button";
+    cyc.className = "cyc-min";
+    cyc.textContent = t.minutes + "m";
+    cyc.title = "Tap to cycle preset times";
+    cyc.setAttribute("aria-label", "Cycle time for " + t.label);
+    cyc.onclick = () => {
+      const opts = SETTINGS.timerMinutes;
+      const idx = opts.indexOf(t.minutes);
+      t.minutes = (idx === -1) ? opts[0] : opts[(idx + 1) % opts.length];
+      renderDraft();
+    };
+
     const min = document.createElement("input");
     min.type = "number"; min.min = 1; min.max = 120; min.step = 1;
     min.value = t.minutes;
-    min.setAttribute("aria-label", "Minutes for " + t.label);
+    min.className = "type-min";
+    min.setAttribute("aria-label", "Type minutes for " + t.label);
     min.onchange = () => {
       t.minutes = Math.round(clampMinutes(min.value, 1, 120, t.minutes));
-      min.value = t.minutes;
+      renderDraft();
     };
 
     const x = document.createElement("button");
@@ -1942,8 +2049,8 @@ function renderDraft(){
     x.setAttribute("aria-label", "Remove " + t.label);
     x.onclick = () => removeDraftTask(i);
 
-    row.appendChild(grip); row.appendChild(label);
-    row.appendChild(min); row.appendChild(x);
+    row.appendChild(arrows); row.appendChild(label);
+    row.appendChild(cyc); row.appendChild(min); row.appendChild(x);
     box.appendChild(row);
   });
 
@@ -1993,6 +2100,14 @@ function startRun(){
     document.getElementById("build-note").textContent =
       "The run needs at least one thing in it.";
     return;
+  }
+  /* NOW it's safe to remove pulled items from the List — the run is
+     really starting. Anything still tagged with a List id (and still
+     present in the draft) leaves the List; items removed from the
+     draft before Start stay on the List untouched. */
+  const pulledIds = draft.tasks.map(t => t.listId).filter(Boolean);
+  if(pulledIds.length){
+    saveList(loadList().filter(it => !pulledIds.includes(it.id)));
   }
   beginSession(draft.mode, draft.tasks, SETTINGS.breaks[draft.mode]);
   draft = null;
@@ -2049,8 +2164,8 @@ function runTask(i){
   document.getElementById("focus-adjust").style.display = "flex";
   focusTimer.start(t.minutes, () => {
     document.getElementById("encourage-line").textContent =
-      "Time. However far you got still counts.";
-  });
+      "Past your plan — tap Done when you're there, or add time.";
+  }, false, true);
 
   setFocusButtons(true);
   goTo("screen-focus");
@@ -2272,8 +2387,8 @@ function lockItIn(){
     adjustRow.style.display = "flex";
     focusTimer.start(chosenMinutes, () => {
       document.getElementById("encourage-line").textContent =
-        "Time. However far you got still counts.";
-    });
+        "Past your plan — tap Done when you're there, or add time.";
+    }, false, true);
   }else{
     ringBlock.style.display = "none";
     plus5.style.display = "none";
@@ -2389,10 +2504,9 @@ function renderRoutineList(){
     row.className = "build-row";
     row.dataset.i = i;
 
-    /* ≡ drag to reorder routines */
-    const grip = makeGrip(rt.name);
-    wireDragHandle(grip, row, "rt-list", (order) => {
-      routines = order.map(idx => routines[idx]);
+    /* ▲▼ arrows to reorder routines */
+    const arrows = makeMoveArrows(i, routines.length, (from, to) => {
+      arrayMove(routines, from, to);
       store.set("routines", routines);
       renderRoutineList();
     });
@@ -2428,13 +2542,13 @@ function renderRoutineList(){
       renderRoutineList();
     };
 
-    row.appendChild(grip); row.appendChild(label); row.appendChild(go);
+    row.appendChild(arrows); row.appendChild(label); row.appendChild(go);
     row.appendChild(ed); row.appendChild(x);
     box.appendChild(row);
   });
 
   document.getElementById("rt-list-note").textContent =
-    routines.length ? "Drag ≡ to reorder · ▶ launch · ✎ edit · ✕ twice to delete."
+    routines.length ? "▲▼ to reorder · ▶ launch · ✎ edit · ✕ twice to delete."
                     : "Nothing here yet. Build your first one — breakfast counts.";
 }
 
@@ -2490,59 +2604,37 @@ function removeRoutineStep(idx){
 }
 
 /* drag state for reordering steps */
-let dragRow = null;
-let dragBoxId = null;        // which container we're dragging within
-let dragCommit = null;       // what to call when the drag ends
+/* Reorder with up/down arrows — reliable on touch, no fiddly drag.
+   Returns a small container holding ▲ and ▼ for row i of n. The
+   move(from, to) callback does the array swap and re-render. */
+function makeMoveArrows(i, n, moveFn){
+  const wrap = document.createElement("span");
+  wrap.className = "move-arrows";
 
-function handleDragMove(e){
-  if(!dragRow || !dragBoxId) return;
-  const box = document.getElementById(dragBoxId);
-  const rows = Array.from(box.querySelectorAll(".build-row")).filter(r => r !== dragRow);
-  let placed = false;
-  for(const r of rows){
-    const rect = r.getBoundingClientRect();
-    if(e.clientY < rect.top + rect.height / 2){
-      box.insertBefore(dragRow, r);
-      placed = true;
-      break;
-    }
-  }
-  if(!placed){ box.appendChild(dragRow); }
+  const up = document.createElement("button");
+  up.type = "button";
+  up.className = "move-arrow";
+  up.textContent = "▲";
+  up.setAttribute("aria-label", "Move up");
+  up.disabled = (i === 0);
+  up.onclick = () => { if(i > 0){ moveFn(i, i - 1); } };
+
+  const down = document.createElement("button");
+  down.type = "button";
+  down.className = "move-arrow";
+  down.textContent = "▼";
+  down.setAttribute("aria-label", "Move down");
+  down.disabled = (i === n - 1);
+  down.onclick = () => { if(i < n - 1){ moveFn(i, i + 1); } };
+
+  wrap.appendChild(up); wrap.appendChild(down);
+  return wrap;
 }
 
-function handleDragEnd(){
-  if(!dragRow) return;
-  dragRow.classList.remove("dragging");
-  const box = document.getElementById(dragBoxId);
-  /* the DOM order is now the truth — read it back as indices */
-  const order = Array.from(box.querySelectorAll(".build-row"))
-    .map(r => parseInt(r.dataset.i, 10));
-  const commit = dragCommit;
-  dragRow = null; dragBoxId = null; dragCommit = null;
-  if(commit){ commit(order); }
-}
-
-/* attach drag behavior to a ≡ handle for a given row, container,
-   and commit-callback. Reused by steps, tasks, and routines. */
-function wireDragHandle(grip, row, boxId, commitFn){
-  grip.addEventListener("pointerdown", (e) => {
-    e.preventDefault();
-    dragRow = row; dragBoxId = boxId; dragCommit = commitFn;
-    row.classList.add("dragging");
-    try{ grip.setPointerCapture(e.pointerId); }catch(err){}
-  });
-  grip.addEventListener("pointermove", handleDragMove);
-  grip.addEventListener("pointerup", handleDragEnd);
-  grip.addEventListener("pointercancel", handleDragEnd);
-}
-
-function makeGrip(labelForAria){
-  const grip = document.createElement("button");
-  grip.type = "button";
-  grip.className = "drag-handle";
-  grip.textContent = "≡";
-  grip.setAttribute("aria-label", "Drag to reorder " + labelForAria);
-  return grip;
+/* move an item within an array from index `from` to index `to` */
+function arrayMove(arr, from, to){
+  const item = arr.splice(from, 1)[0];
+  arr.splice(to, 0, item);
 }
 
 /* tap a step's name → it becomes an input, right there */
@@ -2575,10 +2667,9 @@ function renderRoutineSteps(){
     row.className = "build-row";
     row.dataset.i = i;
 
-    /* ≡ grab here to reorder */
-    const grip = makeGrip(s.label);
-    wireDragHandle(grip, row, "rt-steps", (order) => {
-      editingRoutine.steps = order.map(idx => editingRoutine.steps[idx]);
+    /* ▲▼ arrows to reorder — reliable on touch */
+    const arrows = makeMoveArrows(i, editingRoutine.steps.length, (from, to) => {
+      arrayMove(editingRoutine.steps, from, to);
       renderRoutineSteps();
     });
 
@@ -2604,7 +2695,7 @@ function renderRoutineSteps(){
     x.setAttribute("aria-label", "Remove " + s.label);
     x.onclick = () => removeRoutineStep(i);
 
-    row.appendChild(grip); row.appendChild(label);
+    row.appendChild(arrows); row.appendChild(label);
     row.appendChild(min); row.appendChild(x);
     box.appendChild(row);
   });
@@ -2908,16 +2999,14 @@ function confirmPull(){
   const mode = pullMode;
   const picked = loadList().filter(it => pullSelected.has(it.id));
 
-  /* picked items LEAVE the List — moved, not copied */
-  if(picked.length){
-    saveList(loadList().filter(it => !pullSelected.has(it.id)));
-  }
-
+  /* DON'T remove from the List yet — only when the run actually starts
+     (see startRun). Backing out before Start must lose nothing. Tag each
+     task with its List id so startRun knows what to clear; fromList keeps
+     the skip-returns-to-List behaviour. */
   openBuilder(mode);
-  /* drop the picked items straight into the fresh builder, tagged so
-     that if one gets skipped in the run, it returns to the List */
   picked.forEach(it => {
-    draft.tasks.push({ label: it.label, minutes: draftMinutes, fromList: true });
+    draft.tasks.push({ label: it.label, minutes: draftMinutes,
+                       fromList: true, listId: it.id });
   });
   renderDraft();
 }
@@ -3003,17 +3092,29 @@ function soloStart(){
   if(soloPhase === "rest") return;   /* already resting; use Skip/Reset */
   soloWorkStart = Date.now();
   soloTimer.start(soloMinutes, () => {
-    /* the work timer FINISHED on its own → log it as a win.
-       actual elapsed wall-clock captures any time added mid-run. */
-    logSoloWin();
-    if(SETTINGS.timerRestOn){ beginSoloRest(); }
-    else{
-      document.getElementById("solo-start").textContent = "Time. Start another?";
-      soloButtons(false);
-    }
-  });
+    /* time's up — but don't auto-rest. Enter overtime (red count-up)
+       and offer "Wrap up" so the work ends on the user's terms. */
+    document.getElementById("solo-note").textContent =
+      "Past your timer — wrap up when you're done, or add time.";
+    document.getElementById("solo-start").style.display = "none";
+    document.getElementById("solo-wrap").style.display = "block";
+  }, false, true);
   document.getElementById("solo-start").textContent = "Running…";
+  document.getElementById("solo-wrap").style.display = "none";
   soloButtons(true);
+}
+
+/* end the work session (from overtime or by choice) → win + rest */
+function wrapSoloWork(){
+  document.getElementById("solo-wrap").style.display = "none";
+  document.getElementById("solo-start").style.display = "block";
+  soloTimer.reset();
+  logSoloWin();
+  if(SETTINGS.timerRestOn){ beginSoloRest(); }
+  else{
+    document.getElementById("solo-start").textContent = "Done. Start another?";
+    soloButtons(false);
+  }
 }
 
 /* log a finished Timer-tab work session as a win.
@@ -3066,6 +3167,8 @@ function soloReset(){
   soloWorkStart = null;          /* a reset is not a completion — no win */
   document.getElementById("solo-face").classList.remove("resting");
   document.getElementById("solo-skiprest").style.display = "none";
+  document.getElementById("solo-wrap").style.display = "none";
+  document.getElementById("solo-start").style.display = "block";
   document.getElementById("solo-start").textContent = "Start";
   document.getElementById("solo-pause").textContent = "Pause";
   soloButtons(false);
