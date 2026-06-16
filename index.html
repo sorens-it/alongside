@@ -8,6 +8,15 @@
      One file. One whole app. No internet needed, no installs, nothing
      to sign up for. Open it in any browser and it runs.
 
+     NEW IN v0.24
+     · CUSTOM TIMES EVERYWHERE. In the run builder, each task's
+       minutes is now a number you type directly (1–120), like
+       routine steps — no more cycling through fixed presets. And
+       every "pick a window" row (single task, the run default,
+       the Timer tab) gains a "Custom" option that opens a field
+       to type any minutes you want. Trisha's lists → tasks with
+       exactly the times she means.
+
      NEW IN v0.23 (from real-use feedback)
      · Reorder tasks in the run builder by dragging the ≡ handle.
      · Reorder routines the same way, on the Routines tab.
@@ -1112,7 +1121,7 @@ footer{
     <span class="t-ico">⚙️</span><span class="t-lab">You</span></button>
 </nav>
 
-<footer>Alongside v0.23 · an ORO project</footer>
+<footer>Alongside v0.24 · an ORO project</footer>
 
 <script>
 /* ════════════════════════════════════════════════
@@ -1894,13 +1903,6 @@ function removeDraftTask(idx){
   renderDraft();
 }
 
-function cycleDraftDuration(idx){
-  const opts = SETTINGS.timerMinutes;
-  const cur = opts.indexOf(draft.tasks[idx].minutes);
-  draft.tasks[idx].minutes = opts[(cur + 1) % opts.length];
-  renderDraft();
-}
-
 function renderDraft(){
   const box = document.getElementById("build-list");
   box.innerHTML = "";
@@ -1924,10 +1926,15 @@ function renderDraft(){
     label.title = "Tap to rename";
     label.onclick = () => startRenameDraftTask(i, label);
 
-    const dur = document.createElement("button");
-    dur.type = "button";
-    dur.textContent = t.minutes + " min";
-    dur.onclick = () => cycleDraftDuration(i);
+    /* minutes: type any number, 1–120, just like routine steps */
+    const min = document.createElement("input");
+    min.type = "number"; min.min = 1; min.max = 120; min.step = 1;
+    min.value = t.minutes;
+    min.setAttribute("aria-label", "Minutes for " + t.label);
+    min.onchange = () => {
+      t.minutes = Math.round(clampMinutes(min.value, 1, 120, t.minutes));
+      min.value = t.minutes;
+    };
 
     const x = document.createElement("button");
     x.type = "button";
@@ -1936,7 +1943,7 @@ function renderDraft(){
     x.onclick = () => removeDraftTask(i);
 
     row.appendChild(grip); row.appendChild(label);
-    row.appendChild(dur); row.appendChild(x);
+    row.appendChild(min); row.appendChild(x);
     box.appendChild(row);
   });
 
@@ -3460,19 +3467,75 @@ function renderChips(){
 function renderDurationChips(boxId, getCurrent, setCurrent, includeNone){
   const box = document.getElementById(boxId);
   box.innerHTML = "";
-  const options = includeNone ? [0].concat(SETTINGS.timerMinutes) : SETTINGS.timerMinutes;
-  options.forEach(min => {
+  const presets = includeNone ? [0].concat(SETTINGS.timerMinutes) : SETTINGS.timerMinutes;
+
+  const repaint = () => {
+    box.querySelectorAll("button").forEach(x => x.classList.remove("selected"));
+    const cur = getCurrent();
+    let matched = false;
+    box.querySelectorAll("button[data-min]").forEach(b => {
+      if(parseInt(b.dataset.min, 10) === cur){ b.classList.add("selected"); matched = true; }
+    });
+    /* if the current value isn't a preset, it's a custom one — light the Custom chip */
+    const customBtn = box.querySelector(".custom-chip");
+    if(!matched && customBtn){ customBtn.classList.add("selected"); }
+  };
+
+  presets.forEach(min => {
     const b = document.createElement("button");
     b.type = "button";
+    b.dataset.min = min;
     b.textContent = (min === 0) ? "No timer" : min + " min";
-    if(min === getCurrent()) b.classList.add("selected");
     b.onclick = () => {
       setCurrent(min);
-      box.querySelectorAll("button").forEach(x => x.classList.remove("selected"));
-      b.classList.add("selected");
+      const inp = box.querySelector(".custom-min");
+      if(inp){ inp.style.display = "none"; }
+      repaint();
     };
     box.appendChild(b);
   });
+
+  /* Custom: reveals a number field you type any minutes into */
+  const custom = document.createElement("button");
+  custom.type = "button";
+  custom.className = "custom-chip";
+  custom.textContent = "Custom";
+  box.appendChild(custom);
+
+  const inp = document.createElement("input");
+  inp.type = "number"; inp.min = 1; inp.max = 120; inp.step = 1;
+  inp.className = "custom-min";
+  inp.setAttribute("aria-label", "Custom minutes");
+  inp.placeholder = "min";
+  inp.style.display = "none";
+  inp.style.width = "5.5rem";
+  inp.style.margin = "0";
+  inp.style.padding = ".4rem .6rem";
+  inp.style.borderRadius = "999px";
+  inp.style.fontSize = ".92rem";
+  inp.style.textAlign = "center";
+
+  custom.onclick = () => {
+    inp.style.display = (inp.style.display === "none") ? "inline-block" : "none";
+    if(inp.style.display !== "none"){
+      const cur = getCurrent();
+      if(cur > 0 && !presets.includes(cur)){ inp.value = cur; }
+      inp.focus();
+    }
+  };
+  const applyCustom = () => {
+    const v = Math.round(clampMinutes(inp.value, 1, 120, getCurrent() || 10));
+    inp.value = v;
+    setCurrent(v);
+    repaint();
+  };
+  inp.onchange = applyCustom;
+  inp.addEventListener("keydown", (e) => {
+    if(e.key === "Enter"){ e.preventDefault(); applyCustom(); inp.blur(); }
+  });
+  box.appendChild(inp);
+
+  repaint();
 }
 
 function paintGreeting(){
